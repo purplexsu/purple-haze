@@ -1,0 +1,6 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,NIO,网络
+time=2007-3-7 13\:14\:16
+title=IO与NIO性能比对 - 网络操作
+
+NIO里对Socket的改进也挺大的，增加了SocketChannel和ServerSocketChannel，Selector机制在网络操作里也能发挥很大的作用。于是我写了几个小程序对NIO和IO的Socket操作进行了一下比对，小程序有： 

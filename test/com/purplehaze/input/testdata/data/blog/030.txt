@@ -1,0 +1,6 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,Java 6,GUI
+time=2007-3-16 10\:05\:04
+title=Java SE 6 新特性 - GUI
+
+Mustang里，改进最大的是GUI部分，即AWT与Swing。

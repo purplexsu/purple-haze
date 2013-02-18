@@ -1,0 +1,7 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,Log4j,InitialContent,JNDI
+time=2006-5-29 17\:42\:52
+title=Log4j vs InitialContext
+
+这是两个八杆子都打不到一起的概念，今天竟然被本人不幸拉到了一起。Log4j算是Java里最好的日志系统了，InitialContext是做JNDI查找之前必须new的东东，一个是logging，一个是naming。
+但是……，我很正常很正常的代码，用Log4j的DOMConfigurator.configure("");读取了配置信息，工作正常。等把JMS的一些代码放进来以后，所有的log都没了~~~~无敌了！！设断点Debug，log.info()被意料之中的调用到了，可就是啥输出都没有，啥错误信息也没有~~把新旧代码对比了一下，差异只在引入了JMS的代码，没辙，只能在这些新引入的代码之前设断点，然后一步一步step over这些新加的代码，每step一步，就在调试器里手工输入log.info()，看控制台有没有输出。一开始还是有的，只在执行了new InitialContext()之后，就哑巴了。所以，肯定是它捣的鬼！！问题是，为什么new InitialContext()会把Log4j已经读好的配置给弄没了呢？难到Log4j里面也用到InitialContext了？？

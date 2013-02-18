@@ -1,0 +1,15 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,hash,Collection
+time=2006-7-3 23\:19\:11
+title=Collection Framework与hashing算法
+
+Java Doc里对于Collection.contains(Object o)这个方法的说明是：Returns true if this set contains the specified element. More formally, returns true if and only if this set contains an element e such that (o==null ? e==null : o.equals(e))。因此，如果需要向一个集合中添加一个自定义的类对象，又想让这个对象能以自定义的方式被找到，就需要overwrite该类的equals()方法。同时，《Thinking in Java》里也说，单纯的overwrite equals()方法是不行的，需要同时overwrite hashCode()方法，返回一个自定义的哈希值。但对为什么这么做一直没有给出解释。
+我做了一个小测试，结果是对于像ArrayList这种Collection，当调用它的contains()/get()/remove()等方法时，对于元素对象，只是它的equals()方法被回调以判断其是否与传入的目标对象相一致。但对于像HashSet/HashMap这种包含哈希算法的Collection，必须同时满足equals()方法返回true，且hashCode()方法返回的值相同。
+一开始，我只以为hashCode()只在取对象的时候有用处，没想到它还有更深一层的意思。
+以HashSet为例，当调用它的add方法时，传入对象的hashCode()方法即被回调以计算出一个哈希值，这个哈希值应当是被JDK用来建立一个hashing index了，以便于以后快速地在集合中定位该元素。而我遇到的这个问题刚好在于没有想到add时的哈希运算。
+实际情况是这样的，在服务器会话中有一个HashMap，用来存储发送出去的Request PDU，这个Map用PduHeader这个类做Key，用一个内部Message对象做Value；当服务器会话收到一个Response PDU后，会截取它的PduHeader，去Map里把当初发送的Message找出来，实现一个匹配。Request和Response的PduHeader中，除了CommandID相同外，最主要的就是SequenceNumber是相同的，这个SequenceNumber是long型自加的，因此适合用于匹配一对Request和Response。
+于是，很自然地，overwrite PduHeader的hashCode()，让它返回和SequenceNumber一一映射的值就是了。不能直接用SequenceNumber，因为它是long型的，而hashCode()返回一个int。
+QA的时候出现了问题，接到返回的Response PDU，并截取了它的PduHeader去Map里get的时候，返回值总是null，判断contains()总返回false。没办法，在接收到Response的地方设断点，查看它收到的PduHeader，与Map里的Key相对照，SequenceNumber是一样的啊！hashCode()值也是一样的！equals()也返回true。但为什么调用Map.containsKey()就是返回false呢！！而且最奇妙的是，当把Map里的Key作为参数传给containsKey()的时候，它竟然也返回false，也就是说，这个Map会认为自己里面的东西并不在自己里面！！！
+还得多亏IntelliJ IDEA，它强大的调试功能让我把所有可能尝试的操作都试了一遍，结果还是莫名其妙。最后没办法，我只好在overwrite的hashCode和equals方法中都加了打印语句，看它们到底都啥时候被调用了，返回值都是什么。结果让我吃惊了一小下，hashCode的打印语句有一次很奇怪的输出"hashcode 0"，这次回调是在什么时候发生的呢？返回值又为什么会是0呢？
+仔细看了一遍代码发现，原来在构造需要发送的Request PDU时，它的PduHeader的SequenceNumber是没有指定的，默认为0。然后这个PduHeader就被塞到Map里去了，塞完之后调用一个封装的TcpIpConnection去发送它，在发送的时候，才指定了这个SequenceNumber值。（因为这个值是会话的相关状态，所以不好在创建PDU时指定。）按说Map中维护的只是reference，在塞进去之后更改了SequenceNumber，在Map里也是能反映出来的，调试时看到的也是如此，Map里的Key是有SequenceNumber值的。但坏就坏在add的时候，这个值是0，因此hashCode()返回的值也是0，JDK会根据这个返回值创建一个索引，这个索引就相当于用0这个值创建的了。add之后，虽然SequenceNumber值改成有意义的了，hashCode()返回值也变成有意义的了，但已经创建的那个索引却不会更新了，所以之后的contains/get/remove方法全都无法定位之前塞进去的PduHeader。
+哇，写了好多，就这样了，这个问题花了N大的工夫才找到，不过收获还是蛮大的，不错不错。

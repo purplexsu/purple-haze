@@ -1,0 +1,7 @@
+﻿#Tue Nov 13 11:01:36 CST 2007
+tags=签证,新加坡,旅游
+time=2011-1-4 21\:10\:17
+title=新加坡个人旅游签证申请指南
+
+去南方过冬好像成了我的习惯，08年去{#a{travel/article-034-01.html|海南}#}，10年去{#a{travel/article-047-01.html|泰国}#}，今年又瞄上新加坡。申请新加坡签证不麻烦，可以参考{#a{http://www.mfa.gov.sg/beijingchi/|大使馆官网}#}上的{#a{http://www.mfa.gov.sg/beijingchi/bizSocialPRC.html|中国公民签证要求}#}办理，需要特别注意的事项是：
+1. 签证费153元/人，签证处不刷卡不找零，所以必须自备零钱。

@@ -1,0 +1,6 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Google,Developer Day
+time=2007-6-1 10\:26\:20
+title=Google Developer Day
+
+参加了Google Developer Day，收获颇丰，作为一个小兵，对自己公司的产品实在是缺乏了解，所以，即使是以一个普通用户的身份去听听，还是能学到很多东西。

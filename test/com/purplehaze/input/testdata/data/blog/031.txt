@@ -1,0 +1,6 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,Java 6,JDBC
+time=2007-3-17 21\:36\:41
+title=Java SE 6 新特性 - JDBC 4.0
+
+JDBC 4.0是JSR-221里提出来的，Mustang把它纳入了标准库里，主要的改进是：

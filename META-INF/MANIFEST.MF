@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: commons-codec-1.3.jar;jdom.jar;xercesImpl.jar;xml-apis.jar
+ ;commons-net-1.4.1.jar;commons-httpclient-3.1.jar;commons-codec-1.3.j
+ ar;commons-logging-1.1.1.jar
+Main-Class: com.purplehaze.CommonArticleGenerator
+

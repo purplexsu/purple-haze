@@ -1,0 +1,6 @@
+#Tue Nov 13 11:01:36 CST 2007
+tags=Java编程,Socket,ServerSocket
+time=2006-5-15 21\:29\:01
+title=Socket与ServerSocket
+
+ServerSocket利用阻塞的accept()方法等待客户端连接，一旦有连接，该方法会返回一个Socket对象，这些都没问题。问题就出在如果客户端调用Socket.close()方法关闭了TCP连接，服务器端竟然不知道！（难道地球人都知道这回事，就我大惊小怪？）服务器端的Socket.isConnected()返回true，Socket.isClosed()返回false，所以根本不能指望这两个方法来判断连接是否还存在。

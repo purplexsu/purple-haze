@@ -1,0 +1,7 @@
+#Fri Nov 16 12:45:37 CST 2007
+tags=Java编程,Java 6
+time=2007-3-14 12\:26\:07
+title=Java SE 6 新特性 - Language and Utility
+
+Java SE 6(Mustang)推出了，为了跟紧时尚，咱赶紧找了本书学习学习。Book 24x7上有《Java 6 Platform Revealed》一书，可惜只能在线看，俺写了个程序，把它抓了下来，结果被管理员封帐号了。娘的！
+言归正传，Mustang没有Tiger那样给我带来很多惊喜，或者说，就没什么语言层面的新东西，只是增加了很多API，把很多JSR融进了标准库中。

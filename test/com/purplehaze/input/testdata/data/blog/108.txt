@@ -1,0 +1,10 @@
+﻿#Tue Nov 13 11:01:36 CST 2007
+tags=现场演出,音乐,Rhapsody of Fire
+time=2010-11-11 22\:21\:15
+disptime=2010.11.10
+photo=071
+title=秋风里，你们最激昂！
+subtitle=Rhapsody of Fire北京星光现场
+
+三年半以前，我写那篇{#a{music/article-009-01.html|介绍Rhapsody的博客}#}时，怎么也不会想到，三年半以后的今天，我们能面对面地观看他们的现场演出，相隔一米不到！自打{#a{blog/article-059-01.html|Nightwish来北京}#}之后，我就开始关注{#a{http://www.guitarchina.com/|吉他中国}#}的网站，看到他们请了Lacrimosa、Lamb of God等等大牌乐队，直到Rhapsody of Fire，真是太疯狂了！
+北京是这次{#a{http://www.rhapsodyoffire.com/tours.html|Rhapsody of Fire全球巡演}#}的第二站，老哥几个从冰天雪地的莫斯科直飞北京，宣传他们的最新专辑《The Frozen Tears of Angels》。接下来，这帮40岁的“叔叔”们要以两天一座城市的速度周游南美洲和欧洲，直到明年2月份回到意大利，相当生猛。闲话少说，快快进入激情四射的星光现场吧！
