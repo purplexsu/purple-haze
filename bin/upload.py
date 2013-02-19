@@ -1,10 +1,10 @@
-"""Main Program of monitoring."""
+"""Main Program of upload local files to server."""
 
 __author__="purplexsu"
 
 import base64
+import credential
 import ftplib
-import io
 import os
 import os.path
 import re
@@ -99,24 +99,15 @@ def Upload(targetfile, credential):
   
 def Extract(credential):
   request = urllib2.Request('http://www.purplexsu.net/cmdcmd/cmdcmd.php?cmdcmd=2')
-  user = config.get('default', 'http.username')
-  password = config.get('default', 'http.password')
+  user = credential.get('default', 'http.username')
+  password = credential.get('default', 'http.password')
   authorization = base64.standard_b64encode('%s:%s' % (user, password))
   request.add_header('Authorization', 'Basic %s' % authorization)
   result = urllib2.urlopen(request)
   print result.read()
 
-def ReadCredential():
-  cFile = open(os.environ['HOME'] + '/.purple-haze', 'r')
-  # fake ConfigParser format, add a default section header:
-  tmp = '[default]\n' + a.read()
-  cFile.close()
-  credential = ConfigParser.ConfigParser();
-  credential.readfp(io.BytesIO(tmp))
-  return credential;
-
 def main():
-  credential = ReadCredential()
+  c = credential.ReadCredential()
   print 'which type of files:[a]rticle,[c]olumn,[i]ndex,c[o]mment,[p]hoto:'
   input = sys.stdin.readline().rstrip().split(',')
   targetfile = BASE_DIR + '/update.zip'
@@ -132,8 +123,8 @@ def main():
   if 'p' in input:
     ZipPhoto(zip)
   zip.close()
-  Upload(targetfile, credential)
-  Extract(credential)
+  Upload(targetfile, c)
+  Extract(c)
   raw_input("press <ENTER> to quit\n")
   #end main()
 
