@@ -1,63 +1,127 @@
-// JavaScript for comment files
-var INPUT_ID_ALERT = "\u8bf7\u586b\u5199\u60a8\u7684ID\u3002";
-var EMPTY_TEXT_AREA_COMMENT_ALERT = "\u7559\u8a00\u4e0d\u80fd\u4e3a\u7a7a\u3002";
-var INVALID_TEXT_AREA_COMMENT_ALERT = "\u4e3a\u9632\u6b62\u5783\u573e\u7559" +
+goog.provide('net.purplexsu.CommentPage');
+
+goog.require('net.purplexsu.Page');
+
+
+/**
+ * Comment page class.
+ * @constructor
+ * @extends {net.purplexsu.Page}
+ */
+net.purplexsu.CommentPage = function() {
+  goog.base(this);
+
+  this.sitePattern_ = new RegExp("^(http://|https://|ftp://).*\..*$");
+
+  this.textPattern_ = new RegExp("http://|https://", "g");
+};
+goog.inherits(net.purplexsu.CommentPage, net.purplexsu.Page);
+
+
+// JavaScript for comment files:
+/**
+ * @type {string}
+ */
+net.purplexsu.CommentPage.INPUT_ID_ALERT =
+    "\u8bf7\u586b\u5199\u60a8\u7684ID\u3002";
+
+
+/**
+ * @type {string}
+ */
+net.purplexsu.CommentPage.EMPTY_TEXT_AREA_COMMENT_ALERT =
+    "\u7559\u8a00\u4e0d\u80fd\u4e3a\u7a7a\u3002";
+
+
+/**
+ * @type {string}
+ */
+net.purplexsu.CommentPage.INVALID_TEXT_AREA_COMMENT_ALERT =
+    "\u4e3a\u9632\u6b62\u5783\u573e\u7559" +
     "\u8a00\uff0c\u60a8\u53ea\u80fd\u5728\u6bcf\u6b21\u7559\u8a00" +
     "\u91cc\u5f15\u7528\u4e00\u4e2a\u8d85\u94fe\u63a5\u5730\u5740" +
     "\uff08http://\uff09\u3002\n\u540c\u65f6\uff0c\u8fd9\u4e2a\u5730" +
     "\u5740\u53ea\u4f1a\u4ee5\u7eaf\u6587\u672c\u7684\u5f62\u5f0f\u663e\u793a\u3002";
-var INPUT_CAPCHAR_ALERT = "\u8bf7\u586b\u5199\u9a8c\u8bc1\u7801\u3002";
 
-function PageCompleted() {
-  var commentForm = document.getElementById("CommentForm");
+
+/**
+ * @type {string}
+ */
+net.purplexsu.CommentPage.INPUT_CAPCHAR_ALERT =
+    "\u8bf7\u586b\u5199\u9a8c\u8bc1\u7801\u3002";
+
+
+/** @override */
+net.purplexsu.CommentPage.prototype.renderInternal = function() {
+  var commentForm = goog.dom.getElement("CommentForm");
   if (commentForm) {
-    commentForm.onsubmit = VerifyForm;
+    this.handler.listen(commentForm, goog.events.EventType.SUBMIT, this.verifyForm_);
   }
-  var commentInput = document.getElementById("comment");
+  var commentInput = goog.dom.getElement("comment");
   if (commentInput) {
     commentInput.value = "";
   }
+};
 
-}
-function VerifyForm() {
-  var idInput = document.getElementById("id");
+
+/**
+ * Verify every input value of the comment form.
+ * @param {goog.events.Event} e The SUBMIT event.
+ * @private
+ */
+net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
+  var idInput = goog.dom.getElement("id");
   if (idInput && (idInput.value == null || idInput.value == "")) {
-    window.alert(INPUT_ID_ALERT);
+    window.alert(net.purplexsu.CommentPage.INPUT_ID_ALERT);
     idInput.focus();
-    return false;
+    e.preventDefault();
   }
-  var siteInput = document.getElementById("site");
+  var siteInput = goog.dom.getElement("site");
   if (siteInput && siteInput.value != null && siteInput.value != "") {
-    var pattern = new RegExp("^(http://|https://|ftp://).*\..*$");
-    if(!pattern.test(siteInput.value)) {
+    if (!this.sitePattern_.test(siteInput.value)) {
       siteInput.value = "http://" + siteInput.value;
-      }
+    }
   }
-  var commentInput = document.getElementById("comment");
+  var commentInput = goog.dom.getElement("comment");
   if (commentInput) {
     var text = commentInput.value;
     if (text == null || text == "") {
-      window.alert(EMPTY_TEXT_AREA_COMMENT_ALERT);
+      window.alert(net.purplexsu.CommentPage.EMPTY_TEXT_AREA_COMMENT_ALERT);
       commentInput.focus();
-      return false;
+      e.preventDefault();
     } else {
-      var pattern = new RegExp("http://|https://", "g");
       var count = 0;
-      while(pattern.exec(text) != null){
+      while(this.textPattern_.exec(text) != null){
         count++;
       }
       if(count > 1){
-        window.alert(INVALID_TEXT_AREA_COMMENT_ALERT);
+        window.alert(net.purplexsu.CommentPage.INVALID_TEXT_AREA_COMMENT_ALERT);
         commentInput.focus();
-        return false;
+        e.preventDefault();
       }
     }
   }
-  var capcharInput = document.getElementById("capchar");
+  var capcharInput = goog.dom.getElement("capchar");
   if (capcharInput && (capcharInput.value == null || capcharInput.value == "")) {
-    window.alert(INPUT_CAPCHAR_ALERT);
+    window.alert(net.purplexsu.CommentPage.INPUT_CAPCHAR_ALERT);
     capcharInput.focus();
-    return false;
+    e.preventDefault();
   }
-}
-window.onload = PageCompleted;
+};
+
+
+/**
+ * Static function to call at the end of the JS.
+ */
+net.purplexsu.CommentPage.render = function() {
+  var page = new net.purplexsu.CommentPage();
+  page.render();
+  goog.events.listen(window, goog.events.EventType.UNLOAD, function() {
+    page.dispose();
+  });
+};
+
+
+(function () {
+  net.purplexsu.CommentPage.render();
+})();
