@@ -2,6 +2,7 @@
 
 __author__="purplexsu"
 
+import argparse
 import base64
 import credential
 import ftplib
@@ -88,16 +89,24 @@ def ZipIndex(zip):
               (IsValidDivision, IsIndex, zip))
   zip.write(BASE_DIR + '/' + 'index.html', 'index.html')
   zip.write(BASE_DIR + '/' + 'friends.html', 'friends.html')
-  
-def Upload(targetfile, credential):  
+
+def ZipJavascript(zip):
+  zip.write(BASE_DIR + '/' + 'article.js', 'article.js')
+  zip.write(BASE_DIR + '/' + 'comment.js', 'comment.js')
+  zip.write(BASE_DIR + '/' + 'photo.js', 'photo.js')
+ 
+def Upload(targetfile, credential):
+  print 'Uploading...\n'
   ftp = ftplib.FTP('ftp.purplexsu.net',
 		   credential.get('default', 'ftp.username'),
 		   credential.get('default', 'ftp.password'))
+  ftp.set_pasv(True)
   ftp.cwd('www/cmdcmd')
   ftp.storbinary('stor update.zip', open(targetfile, 'rb'))
   ftp.close()
   
 def Extract(credential):
+  print 'Extracting...\n'
   request = urllib2.Request('http://www.purplexsu.net/cmdcmd/cmdcmd.php?cmdcmd=2')
   user = credential.get('default', 'http.username')
   password = credential.get('default', 'http.password')
@@ -107,9 +116,15 @@ def Extract(credential):
   print result.read()
 
 def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-t', '--type', required=False)
+  cmdline = parser.parse_args()
+  input = cmdline.type
+
   c = credential.ReadCredential()
-  print 'which type of files:[a]rticle,[c]olumn,[i]ndex,c[o]mment,[p]hoto:'
-  input = sys.stdin.readline().rstrip().split(',')
+  if (input == None):
+    print 'which type of files:[a]rticle,[c]olumn,[i]ndex,[j]avascript,c[o]mment,[p]hoto:'
+    input = sys.stdin.readline().rstrip().split(',')
   targetfile = BASE_DIR + '/update.zip'
   zip = zipfile.ZipFile(targetfile, 'w', zipfile.ZIP_DEFLATED)
   if 'a' in input:
@@ -118,6 +133,8 @@ def main():
     ZipColumn(zip)
   if 'i' in input:
     ZipIndex(zip)
+  if 'j' in input:
+    ZipJavascript(zip)
   if 'o' in input:
     ZipComment(zip)
   if 'p' in input:
