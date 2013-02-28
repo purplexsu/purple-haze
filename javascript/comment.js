@@ -75,6 +75,7 @@ net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
     window.alert(net.purplexsu.CommentPage.INPUT_ID_ALERT);
     idInput.focus();
     e.preventDefault();
+    return;
   }
   var siteInput = goog.dom.getElement("site");
   if (siteInput && siteInput.value != null && siteInput.value != "") {
@@ -89,6 +90,7 @@ net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
       window.alert(net.purplexsu.CommentPage.EMPTY_TEXT_AREA_COMMENT_ALERT);
       commentInput.focus();
       e.preventDefault();
+      return;
     } else {
       var count = 0;
       while(this.textPattern_.exec(text) != null){
@@ -98,6 +100,7 @@ net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
         window.alert(net.purplexsu.CommentPage.INVALID_TEXT_AREA_COMMENT_ALERT);
         commentInput.focus();
         e.preventDefault();
+        return;
       }
     }
   }
@@ -106,6 +109,7 @@ net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
     window.alert(net.purplexsu.CommentPage.INPUT_CAPCHAR_ALERT);
     capcharInput.focus();
     e.preventDefault();
+    return;
   }
 };
 
