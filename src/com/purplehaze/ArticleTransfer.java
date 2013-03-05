@@ -155,7 +155,7 @@ public class ArticleTransfer {
           credentials.getProperty("ftp.username"),
           credentials.getProperty("ftp.password"));
       ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-      ftpClient.enterLocalActiveMode();
+      ftpClient.enterLocalPassiveMode();
       ftpClient.changeWorkingDirectory("/www/cmdcmd");
       ftpClient.storeFile(zipFile.getName(), is);
       ftpClient.disconnect();
