@@ -8,8 +8,10 @@ import org.jdom.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static com.purplehaze.Utils.findElement;
 
@@ -267,6 +269,13 @@ public abstract class AbstractDivisionManager {
 
     private static final int MAX_SNIPPETS_PER_COLUMN = 3;
 
+    private static final Set<String> PRESET_COLUMNS = new HashSet<String>() {
+      {
+        add("delicious");
+        add("museum");
+      }
+    };
+
     public AppraisalManager(SiteContent siteContent, Context context) {
       super(siteContent, context);
     }
@@ -276,7 +285,13 @@ public abstract class AbstractDivisionManager {
       Document doc = context.getFileManager().nonValidatedBuild(context.getDivisionIndexTemplateFile());
       Utils.setMenuFocus(doc, context.getDivision());
       ArticleDataAggregator ada = siteContent.getArticleAggregator(context);
-      String column = ada.getCurrentWorkingReader().getColumns()[0];
+      for (String column : PRESET_COLUMNS) {
+        updateOneColumnArea(doc, ada, column);
+      }
+      context.getFileManager().xmlOutput(doc, context.getDivisionIndexFile());
+    }
+
+    private void updateOneColumnArea(Document doc, ArticleDataAggregator ada, String column) throws IOException, ClassNotFoundException {
       Element divE = Utils.findElement(doc, "div", column + "Area");
       Namespace ns = divE.getNamespace();
       List content = divE.getChildren("div", ns);
@@ -302,7 +317,6 @@ public abstract class AbstractDivisionManager {
         as.writeLeftAligned(cellDivE, ns);
       }
       divE.addContent(new Element("hr", ns));
-      context.getFileManager().xmlOutput(doc, context.getDivisionIndexFile());
     }
   }
 
