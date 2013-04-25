@@ -8,10 +8,8 @@ import org.jdom.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import static com.purplehaze.Utils.findElement;
 
@@ -194,6 +192,8 @@ public abstract class AbstractDivisionManager {
 
   private static class MusicManager extends AbstractDivisionManager {
 
+    public static final int MAX_SNIPPETS_PER_COLUMN = 2;
+
     public MusicManager(SiteContent siteContent, Context context) {
       super(siteContent, context);
     }
@@ -203,18 +203,18 @@ public abstract class AbstractDivisionManager {
       Document doc = context.getFileManager().nonValidatedBuild(context.getDivisionIndexTemplateFile());
       Utils.setMenuFocus(doc, context.getDivision());
       ArticleDataAggregator ada = siteContent.getArticleAggregator(context);
-      ArticleDataReader adr = ada.getCurrentWorkingReader();
-      String column = adr.getColumns()[0];
-      Element divE = Utils.findElement(doc, "div", column + "music");
-      Namespace ns = divE.getNamespace();
-      divE.removeContent();
-      List<ArticleDataReader> columnReaders = ada.getReaders(column);
-      for (int i = columnReaders.size() - 1; columnReaders.size() - i <= 2 && i >= 0; i--) {
-        ArticleDataReader reader = columnReaders.get(i);
-        ColumnManager cm = new ColumnManager(context, siteContent);
-        ArticleSnippet snippet = cm.generateSnippet(reader);
-        snippet.writeLeftAligned(divE, ns);
-        divE.addContent(new Element("div", ns).setAttribute("class", "verticalspace").addContent(new EntityRef("nbsp")));
+      for (String column : ada.getAllColumns()) {
+        Element divE = Utils.findElement(doc, "div", column + "music");
+        Namespace ns = divE.getNamespace();
+        divE.removeContent();
+        List<ArticleDataReader> columnReaders = ada.getReaders(column);
+        for (int i = columnReaders.size() - 1; columnReaders.size() - i <= MAX_SNIPPETS_PER_COLUMN && i >= 0; i--) {
+          ArticleDataReader reader = columnReaders.get(i);
+          ColumnManager cm = new ColumnManager(context, siteContent);
+          ArticleSnippet snippet = cm.generateSnippet(reader);
+          snippet.writeLeftAligned(divE, ns);
+          divE.addContent(new Element("div", ns).setAttribute("class", "verticalspace").addContent(new EntityRef("nbsp")));
+        }
       }
       context.getFileManager().xmlOutput(doc, context.getDivisionIndexFile());
     }
@@ -269,13 +269,6 @@ public abstract class AbstractDivisionManager {
 
     private static final int MAX_SNIPPETS_PER_COLUMN = 3;
 
-    private static final Set<String> PRESET_COLUMNS = new HashSet<String>() {
-      {
-        add("delicious");
-        add("museum");
-      }
-    };
-
     public AppraisalManager(SiteContent siteContent, Context context) {
       super(siteContent, context);
     }
@@ -285,38 +278,34 @@ public abstract class AbstractDivisionManager {
       Document doc = context.getFileManager().nonValidatedBuild(context.getDivisionIndexTemplateFile());
       Utils.setMenuFocus(doc, context.getDivision());
       ArticleDataAggregator ada = siteContent.getArticleAggregator(context);
-      for (String column : PRESET_COLUMNS) {
-        updateOneColumnArea(doc, ada, column);
+      for (String column : ada.getAllColumns()) {
+        Element divE = Utils.findElement(doc, "div", column + "Area");
+        Namespace ns = divE.getNamespace();
+        List content = divE.getChildren("div", ns);
+        Element titleDivE = (Element) content.get(0);
+        Element introDivE = (Element) content.get(1);
+        divE.removeContent();
+        divE.addContent(titleDivE).addContent(introDivE);
+        List<ArticleDataReader> readers = ada.getReaders(column);
+        int count = Math.min(MAX_SNIPPETS_PER_COLUMN, readers.size());
+        for (int i = readers.size() - 1; readers.size() - i <= count; i--) {
+          ArticleDataReader reader = readers.get(i);
+          String snippet = reader.getSnippet();
+          if (snippet == null) {
+            snippet = new ArticleContentParser(context, siteContent)
+                .getFormatedPages(reader.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
+            snippet = snippet.substring(0, Math.min(new Random().nextInt(20) + 40, snippet.length()))
+                + Translations.SUSPENSION_POINTS;
+          }
+          ArticleSnippet as = new ArticleSnippet(Utils.getArticleFileName(reader.getArticleId()),
+              reader.getFullTitle(), snippet, reader.getImgSnippetPath(context.getDivisionPath()));
+          Element cellDivE = new Element("div", ns).setAttribute("class", "columncell_l");
+          divE.addContent(cellDivE);
+          as.writeLeftAligned(cellDivE, ns);
+        }
+        divE.addContent(new Element("hr", ns));
       }
       context.getFileManager().xmlOutput(doc, context.getDivisionIndexFile());
-    }
-
-    private void updateOneColumnArea(Document doc, ArticleDataAggregator ada, String column) throws IOException, ClassNotFoundException {
-      Element divE = Utils.findElement(doc, "div", column + "Area");
-      Namespace ns = divE.getNamespace();
-      List content = divE.getChildren("div", ns);
-      Element titleDivE = (Element) content.get(0);
-      Element introDivE = (Element) content.get(1);
-      divE.removeContent();
-      divE.addContent(titleDivE).addContent(introDivE);
-      List<ArticleDataReader> readers = ada.getReaders(column);
-      int count = Math.min(MAX_SNIPPETS_PER_COLUMN, readers.size());
-      for (int i = readers.size() - 1; readers.size() - i <= count; i--) {
-        ArticleDataReader reader = readers.get(i);
-        String snippet = reader.getSnippet();
-        if (snippet == null) {
-          snippet = new ArticleContentParser(context, siteContent)
-              .getFormatedPages(reader.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
-          snippet = snippet.substring(0, Math.min(new Random().nextInt(20) + 40, snippet.length()))
-              + Translations.SUSPENSION_POINTS;
-        }
-        ArticleSnippet as = new ArticleSnippet(Utils.getArticleFileName(reader.getArticleId()),
-            reader.getFullTitle(), snippet, reader.getImgSnippetPath(context.getDivisionPath()));
-        Element cellDivE = new Element("div", ns).setAttribute("class", "columncell_l");
-        divE.addContent(cellDivE);
-        as.writeLeftAligned(cellDivE, ns);
-      }
-      divE.addContent(new Element("hr", ns));
     }
   }
 
