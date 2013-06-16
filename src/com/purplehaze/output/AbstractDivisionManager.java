@@ -108,25 +108,30 @@ public abstract class AbstractDivisionManager {
         throws IOException, ClassNotFoundException {
       tdE.addContent(new Element("div", ns).setAttribute("class", "timestamp").setText(reader.getDisplayTime()));
       tdE.addContent(new Element("div", ns).setAttribute("class", "snippetheader").setText(reader.getFullTitle()));
-      Element htmlE = new ArticleContentParser(context, siteContent)
-          .getFormatedPages(reader.getArticleId(), FormatLevel.SNIPPET, ns).get(0);
-      List content = htmlE.removeContent();
-      int count = 0;
-      Element divE = new Element("div", ns).setAttribute("class", "snippettext");
-      for (Object o : content) {
-        Content c = (Content) o;
-        if (c instanceof Element && Utils.equals(((Element) c).getName(), "div")) {
-          continue;
+      Element snippetElement = new Element("div", ns).setAttribute("class", "snippettext");
+      final String snippet = reader.getSnippet();
+      if (Utils.isEmptyString(snippet)) {
+        Element htmlE = new ArticleContentParser(context, siteContent)
+            .getFormatedPages(reader.getArticleId(), FormatLevel.SNIPPET, ns).get(0);
+        List content = htmlE.removeContent();
+        int count = 0;
+        for (Object o : content) {
+          Content c = (Content) o;
+          if (c instanceof Element && Utils.equals(((Element) c).getName(), "div")) {
+            continue;
+          }
+          snippetElement.addContent(c);
+          if (c instanceof Element && Utils.equals(((Element) c).getName(), "br")) {
+            count++;
+          }
+          if (count >= 3) {
+            break;
+          }
         }
-        divE.addContent(c);
-        if (c instanceof Element && Utils.equals(((Element) c).getName(), "br")) {
-          count++;
-        }
-        if (count >= 3) {
-          break;
-        }
+      } else {
+        snippetElement.setText(snippet);
       }
-      tdE.addContent(divE);
+      tdE.addContent(snippetElement);
       String articleName = Utils.getArticleFileName(reader.getArticleId());
       String commentName = Utils.getCommentFileName(reader.getArticleId());
       tdE.addContent(new Element("div", ns).setAttribute("class", "timestamp")

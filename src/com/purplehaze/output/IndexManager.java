@@ -54,10 +54,13 @@ public class IndexManager {
     Namespace ns = divE.getNamespace();
     ArticleDataReader lastOne = ada.getReaders().get(ada.getReaders().size() - 1);
     String articleFileName = division + "/" + Utils.getArticleFileName(lastOne.getArticleId());
-    String snippetText = new ArticleContentParser(context, siteContent)
-        .getFormatedPages(lastOne.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
-    int snippetLength = Math.min(74, snippetText.length());
-    snippetText = snippetText.substring(0, snippetLength) + Translations.SUSPENSION_POINTS;
+    String snippetText = lastOne.getSnippet();
+    if (Utils.isEmptyString(snippetText)) {
+      snippetText = new ArticleContentParser(context, siteContent)
+          .getFormatedPages(lastOne.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
+      int snippetLength = Math.min(74, snippetText.length());
+      snippetText = snippetText.substring(0, snippetLength) + Translations.SUSPENSION_POINTS;
+    }
     ArticleSnippet as = new ArticleSnippet(articleFileName, lastOne.getFullTitle(), snippetText, null);
     as.writeLeftAligned(divE, ns);
     writeMoreLink(doc, division, ada.size());
