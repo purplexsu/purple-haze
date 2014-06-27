@@ -47,7 +47,7 @@ net.purplexsu.CommentPage.INVALID_TEXT_AREA_COMMENT_ALERT =
 /**
  * @type {string}
  */
-net.purplexsu.CommentPage.INPUT_CAPCHAR_ALERT =
+net.purplexsu.CommentPage.INPUT_CAPTCHA_ALERT =
     "\u8bf7\u586b\u5199\u9a8c\u8bc1\u7801\u3002";
 
 
@@ -61,6 +61,9 @@ net.purplexsu.CommentPage.prototype.renderInternal = function() {
   if (commentInput) {
     commentInput.value = "";
   }
+  var captcha = goog.dom.getElement("captcha_img");
+  //this.handler.listen(captcha, goog.events.EventType.CLICK, this.refreshCaptcha_);
+  this.refreshCaptcha_();
 };
 
 
@@ -104,15 +107,24 @@ net.purplexsu.CommentPage.prototype.verifyForm_ = function(e) {
       }
     }
   }
-  var capcharInput = goog.dom.getElement("capchar");
-  if (capcharInput && (capcharInput.value == null || capcharInput.value == "")) {
-    window.alert(net.purplexsu.CommentPage.INPUT_CAPCHAR_ALERT);
-    capcharInput.focus();
+  var captchaInput = goog.dom.getElement("captcha");
+  if (captchaInput && (captchaInput.value == null || captchaInput.value == "")) {
+    window.alert(net.purplexsu.CommentPage.INPUT_CAPTCHA_ALERT);
+    captchaInput.focus();
     e.preventDefault();
     return;
   }
 };
 
+
+/**
+ * Refresh captcha image after being clicked.
+ * @private
+ */
+net.purplexsu.CommentPage.prototype.refreshCaptcha_ = function() {
+  var captcha = goog.dom.getElement("captcha_img");
+  captcha.src = "../captcha.php?" + new Date().getTime();
+};
 
 /**
  * Static function to call at the end of the JS.
