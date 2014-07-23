@@ -3,9 +3,19 @@ tags=老版保留贴
 time=2006-1-10 15\:52\:56
 title=正文标题
 columns=hunan,jiangxi,hubei,all
+photo=001
 
-第一段
-换行{#a{travel/article-001.html|段尾站内链接}#}a
+{@t2{标题一1}@}
+{#b{正}#}文1
+{@t3{标题二2}@}
+{@img{002-02}@}
+正文{#b{2}#}
+{@img{01}@}
+{@t3{标题二2}@}
+{@img{/image/icon.jpg}@}
+正文3
+{@img{http://example.com/image/icon.jpg}@}
+{@t2{标题一2}@}
+正文4
 
-第二段
-换行{#a{http://example.com|站外链接}#}
+正文5

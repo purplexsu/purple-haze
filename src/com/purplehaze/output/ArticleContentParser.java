@@ -4,6 +4,7 @@ import com.purplehaze.Context;
 import com.purplehaze.Division;
 import com.purplehaze.Utils;
 import com.purplehaze.input.*;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.EntityRef;
@@ -24,7 +25,8 @@ import java.util.regex.Pattern;
 class ArticleContentParser {
 
   private static final Pattern PAGE_PATTERN = Pattern.compile("(\\{!\\S+?!\\})");
-  private static final Pattern PARAGRAPH_PATTERN_1 = Pattern.compile("(\\n{2,}|(\\{@\\S+\\{.+?\\}@\\}))");
+  private static final Pattern PARAGRAPH_PATTERN_1 = Pattern
+      .compile("(\\n{2,}|(\\{@\\S+\\{.+?\\}@\\}))");
   private static final Pattern PARAGRAPH_PATTERN_2 = Pattern.compile("\\{@(\\S+)\\{(.+)\\}@\\}");
   private static final Pattern PARAGRAPH_PATTERN_3 = Pattern.compile("\\n{2,}");
   private static final Pattern SENTENCE_PATTERN_1 = Pattern.compile("(\\n|(\\{#.+?#\\}))");
@@ -53,7 +55,8 @@ class ArticleContentParser {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Element> getFormattedPages(String articleId, FormatLevel formatLevel, Namespace ns) throws IOException, ClassNotFoundException {
+  public List<Element> getFormattedPages(String articleId, FormatLevel formatLevel, Namespace ns)
+      throws IOException, ClassNotFoundException {
     final ArticleMeta meta = new ArticleMeta(articleId, formatLevel, ada.getDivision());
     if (!cache.cacheHit(meta, ada.getReader(articleId).lastModified())) {
       ArticleContent content = generateArticleContent(articleId, formatLevel, ns, meta);
@@ -63,7 +66,8 @@ class ArticleContentParser {
       try {
         content = (ArticleContent) cache.get(meta);
       } catch (Exception e) {
-        System.err.println(e.getMessage() + " However, this error is handled and cache is abandoned.");
+        System.err
+            .println(e.getMessage() + " However, this error is handled and cache is abandoned.");
       }
       if (content == null) {
         content = generateArticleContent(articleId, formatLevel, ns, meta);
@@ -83,7 +87,8 @@ class ArticleContentParser {
     return content;
   }
 
-  public List<Element> getPageSubtitles(String articleId, Namespace ns) throws IOException, ClassNotFoundException {
+  public List<Element> getPageSubtitles(String articleId, Namespace ns)
+      throws IOException, ClassNotFoundException {
     final ArticleMeta meta = new ArticleMeta(articleId, FormatLevel.FULL, ada.getDivision());
     if (!cache.cacheHit(meta, ada.getReader(articleId).lastModified())) {
       getFormattedPages(articleId, FormatLevel.FULL, ns);
@@ -96,7 +101,7 @@ class ArticleContentParser {
       throws IOException {
     ArticleContent articleContent = new ArticleContent(ns);
     ArticleDataReader adr = ada.getReader(articleId);
-    String content = adr.getRawContent().trim();
+    String content = adr.getRawContent();
     //{!page!} currently
     Matcher m = PAGE_PATTERN.matcher(content);
     int start = 0;
@@ -115,7 +120,8 @@ class ArticleContentParser {
     return articleContent;
   }
 
-  private void handleOnePage(ArticleContent content, String pageRawContent, int pageIndex, FormatLevel formatLevel, Namespace ns) throws IOException {
+  private void handleOnePage(ArticleContent content, String pageRawContent, int pageIndex,
+      FormatLevel formatLevel, Namespace ns) throws IOException {
     Element pageE = new Element("html", ns);
     content.addElement(pageE);
     ArticleIndex articleIndex = content.getIndex();
@@ -126,7 +132,8 @@ class ArticleContentParser {
       if (adr.getSubtitle() != null) {
         pageE.addContent(new Element("h2", ns).setText("--" + adr.getSubtitle()));
       }
-      pageE.addContent(new Element("p", ns).setAttribute("class", "timestamp").setText("(" + adr.getDisplayTime() + ")"));
+      pageE.addContent(new Element("p", ns).setAttribute("class", "timestamp")
+          .setText("(" + adr.getDisplayTime() + ")"));
       articleIndex.attach(pageE);
     }
     Matcher m = PARAGRAPH_PATTERN_1.matcher(pageRawContent);
@@ -139,7 +146,8 @@ class ArticleContentParser {
     handleOneParagraph(pageE, pageRawContent.substring(start), formatLevel, ns);
   }
 
-  private void handleParagraphTag(ArticleIndex articleIndex, Element pageE, String tag, int pageIndex, FormatLevel formatLevel, Namespace ns) throws IOException {
+  private void handleParagraphTag(ArticleIndex articleIndex, Element pageE, String tag,
+      int pageIndex, FormatLevel formatLevel, Namespace ns) throws IOException {
     if (!PARAGRAPH_PATTERN_3.matcher(tag).matches()) {
       Matcher m = PARAGRAPH_PATTERN_2.matcher(tag);
       if (!m.find()) {
@@ -164,7 +172,8 @@ class ArticleContentParser {
               pageE.addContent(new Element("h3", ns)
                   .setAttribute("id", Utils.getAnchorId(fullTitle))
                   .setText(fullTitle));
-              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type, pageIndex);
+              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
+                  pageIndex);
               break;
             }
             case SNIPPET: {
@@ -183,7 +192,8 @@ class ArticleContentParser {
               pageE.addContent(new Element("h4", ns)
                   .setAttribute("id", Utils.getAnchorId(fullTitle))
                   .setText(fullTitle));
-              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type, pageIndex);
+              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
+                  pageIndex);
               break;
             }
             case SNIPPET: {
@@ -198,7 +208,7 @@ class ArticleContentParser {
         }
       } else if ("img".equalsIgnoreCase(type)) {
         String alt = null;
-        String src = null;
+        String src;
         String link = null;
         Element pE = new Element("p", ns).setAttribute("class", "article_photo");
         Element imgE = new Element("img", ns);
@@ -219,7 +229,7 @@ class ArticleContentParser {
         } else {
           //{@img{01}@} or {@img{001-01}@}
           String album = ada.getCurrentWorkingReader().getPhoto();
-          if (album == null) {
+          if (album == null || data.contains("-")) {
             album = data.split("-")[0];
             data = data.split("-")[1];
           }
@@ -246,7 +256,8 @@ class ArticleContentParser {
           }
           case SNIPPET: {
             if (alt == null) {
-              pageE.addContent("<" + Division.PHOTO.getChinese() + ">").addContent(new Element("br", ns));
+              pageE.addContent("<" + Division.PHOTO.getChinese() + ">")
+                  .addContent(new Element("br", ns));
             } else {
               pageE.addContent("<")
                   .addContent(new Element("a", ns)
@@ -273,14 +284,15 @@ class ArticleContentParser {
           case FULL: {
             pageE.addContent(new Element("p", ns).setAttribute("class", "article_photo")
                 .addContent(new Element("embed", ns)
-                    .setAttribute("src", "http://player.youku.com/player.php/sid/" + id + "/v.swf")
-                    .setAttribute("allowFullScreen", "true")
-                    .setAttribute("quality", "high")
-                    .setAttribute("width", width)
-                    .setAttribute("height", height)
-                    .setAttribute("align", "middle")
-                    .setAttribute("allowScriptAccess", "always")
-                    .setAttribute("type", "application/x-shockwave-flash")
+                        .setAttribute("src",
+                            "http://player.youku.com/player.php/sid/" + id + "/v.swf")
+                        .setAttribute("allowFullScreen", "true")
+                        .setAttribute("quality", "high")
+                        .setAttribute("width", width)
+                        .setAttribute("height", height)
+                        .setAttribute("align", "middle")
+                        .setAttribute("allowScriptAccess", "always")
+                        .setAttribute("type", "application/x-shockwave-flash")
                 ));
             break;
           }
@@ -299,7 +311,12 @@ class ArticleContentParser {
     }
   }
 
-  private void handleOneParagraph(Element pageE, String paragraph, FormatLevel formatLevel, Namespace ns) {
+  private void handleOneParagraph(Element pageE, String paragraph, FormatLevel formatLevel,
+      Namespace ns) {
+    paragraph = paragraph.trim();
+    if (Utils.isEmptyString(paragraph)) {
+      return;
+    }
     Element pE = new Element("p", ns);
     Matcher m = SENTENCE_PATTERN_1.matcher(paragraph);
     int start = 0;
@@ -332,44 +349,56 @@ class ArticleContentParser {
       if (formatLevel != FormatLevel.RAW) {
         pE.addContent(new Element("br", ns));
       }
-    } else {
-      Matcher m = SENTENCE_PATTERN_2.matcher(tag);
-      if (!m.find()) {
-        throw new IllegalArgumentException("Wrong data format for tag:" + tag);
+      return;
+    }
+    Matcher m = SENTENCE_PATTERN_2.matcher(tag);
+    if (!m.find()) {
+      throw new IllegalArgumentException("Wrong data format for tag:" + tag);
+    }
+    String type = m.group(1);
+    String data = m.group(2);
+    if ("a".equalsIgnoreCase(type)) {
+      String link, text;
+      if (data.contains("|")) {
+        //{#a{http://www.google.cn|Ѭ��ζ}#}
+        link = data.split("\\|")[0];
+        text = data.split("\\|")[1];
+      } else {
+        //{#a{http://www.google.cn}#}
+        link = data;
+        text = data;
       }
-      String type = m.group(1);
-      String data = m.group(2);
-      if ("a".equalsIgnoreCase(type)) {
-        String link, text;
-        if (data.contains("|")) {
-          //{#a{http://www.google.cn|Ѭ��ζ}#}
-          link = data.split("\\|")[0];
-          text = data.split("\\|")[1];
-        } else {
-          //{#a{http://www.google.cn}#}
-          link = data;
-          text = data;
-        }
-        switch (formatLevel) {
-          case FULL:
-          case SNIPPET: {
-            boolean external = link.startsWith("http");
-            Element aE = new Element("a", ns);
-            pE.addContent(aE);
-            if (external) {
-              aE.setAttribute("rel", "external").setAttribute("href", link).setText(text);
-            } else {
-              aE.setAttribute("href", "../" + link).setText(text);
-            }
-            break;
+      switch (formatLevel) {
+        case FULL:
+        case SNIPPET: {
+          boolean external = link.startsWith("http");
+          Element aE = new Element("a", ns);
+          pE.addContent(aE);
+          if (external) {
+            aE.setAttribute("rel", "external").setAttribute("href", link).setText(text);
+          } else {
+            aE.setAttribute("href", "../" + link).setText(text);
           }
-          case RAW: {
-            pE.addContent(text);
-            break;
-          }
+          break;
         }
-      } else if ("b".equalsIgnoreCase(type)) {
-        pE.addContent(new Element("b", ns).setText(data));
+        case RAW: {
+          pE.addContent(text);
+          break;
+        }
+      }
+      return;
+    }
+    if ("b".equalsIgnoreCase(type)) {
+      switch (formatLevel) {
+        case FULL:
+        case SNIPPET: {
+          pE.addContent(new Element("b", ns).setText(data));
+          break;
+        }
+        case RAW: {
+          pE.addContent(data);
+          break;
+        }
       }
     }
   }
@@ -428,7 +457,8 @@ class ArticleContentParser {
     public boolean equals(Object obj) {
       if (obj instanceof ArticleMeta) {
         ArticleMeta k = (ArticleMeta) obj;
-        return k.articleId.equals(articleId) && k.formatLevel == formatLevel && k.division == division;
+        return k.articleId.equals(articleId) && k.formatLevel == formatLevel
+            && k.division == division;
       }
       return false;
     }

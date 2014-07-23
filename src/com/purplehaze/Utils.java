@@ -2,16 +2,19 @@ package com.purplehaze;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
-import javax.swing.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.swing.ImageIcon;
 
 /**
  * Util class.
@@ -72,13 +75,6 @@ public class Utils {
   public static void verifyDir(File file) throws IOException {
     if (!file.exists() || !file.isDirectory()) {
       throw new IOException("The dir(" + file + ") is wrong!");
-    }
-
-  }
-
-  public static void verifyFile(File file) throws FileNotFoundException {
-    if (!file.exists() || file.isDirectory()) {
-      throw new FileNotFoundException("The file(" + file + ") is wrong!");
     }
 
   }
@@ -145,8 +141,12 @@ public class Utils {
   public static void fillImgTag(String src, File photo, Element imgE, String alt) throws IOException {
     ImageIcon img = new ImageIcon(photo.getCanonicalPath());
     imgE.setAttribute("src", src);
-    imgE.setAttribute("height", String.valueOf(img.getIconHeight()));
-    imgE.setAttribute("width", String.valueOf(img.getIconWidth()));
+    final int height = img.getIconHeight();
+    final int width = img.getIconWidth();
+    if (height > 0 && width > 0) {
+      imgE.setAttribute("height", String.valueOf(height));
+      imgE.setAttribute("width", String.valueOf(width));
+    }
     if (alt != null) {
       imgE.setAttribute("alt", alt);
     }
