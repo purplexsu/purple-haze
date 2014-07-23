@@ -1,8 +1,11 @@
 #Tue Nov 13 11:01:36 CST 2007
 tags=老版保留贴
 time=2006-1-10 15\:52\:56
-title=还是不习惯写BLOG
+title=正文标题
 columns=hunan,jiangxi,hubei,all
 
-所以还是链回自己的主页去吧，哈哈
-http://purplexsu.cozyhome.com.cn/
+第一段
+换行{#a{travel/article-001.html|段尾站内链接}#}a
+
+第二段
+换行{#a{http://example.com|站外链接}#}

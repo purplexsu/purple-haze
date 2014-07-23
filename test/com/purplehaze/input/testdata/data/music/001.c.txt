@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>Purplexsu</id>
+    <time>2006/5/14 15:00</time>
+    <Text>准确说是北京邮电大学研究生一年级，简称大一，不过为了方便你理解，我已经把它改成研一了:)</Text>
+  </comment>
+  <comment>
+    <id>R</id>
+    <time>2006/5/14 1:37</time>
+    <Text>你在CA工作，是研一吧</Text>
+  </comment>
+</comments>
+

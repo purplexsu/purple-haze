@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>（没有名字）</id>
+    <time>2007/7/14 21:49</time>
+    <Text>记下来记下来, 我最近也四处寻找口福中</Text>
+  </comment>
+  <comment>
+    <id>ningning</id>
+    <time>2007/7/10 17:23</time>
+    <Text>比桥香园的还好呀？！那一定要尝尝～</Text>
+  </comment>
+</comments>
+

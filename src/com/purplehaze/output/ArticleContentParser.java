@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 class ArticleContentParser {
 
   private static final Pattern PAGE_PATTERN = Pattern.compile("(\\{!\\S+?!\\})");
-  private static final Pattern PARAGRAPH_PATTHERN_1 = Pattern.compile("(\\n{2,}|(\\{@\\S+\\{.+?\\}@\\}))");
+  private static final Pattern PARAGRAPH_PATTERN_1 = Pattern.compile("(\\n{2,}|(\\{@\\S+\\{.+?\\}@\\}))");
   private static final Pattern PARAGRAPH_PATTERN_2 = Pattern.compile("\\{@(\\S+)\\{(.+)\\}@\\}");
   private static final Pattern PARAGRAPH_PATTERN_3 = Pattern.compile("\\n{2,}");
-  private static final Pattern SENTENCE_PATTERN_1 = Pattern.compile("(\\n{1}|\\{#.+?#\\})");
+  private static final Pattern SENTENCE_PATTERN_1 = Pattern.compile("(\\n|(\\{#.+?#\\}))");
   private static final Pattern SENTENCE_PATTERN_2 = Pattern.compile("\\{#(\\S+)\\{(.+)\\}#\\}");
   private static final Pattern SENTENCE_PATTERN_3 = Pattern.compile("(\\s{2,})");
   private static final Set<String> INDENT_TAGS = new HashSet<String>() {
@@ -39,20 +39,24 @@ class ArticleContentParser {
   private final ArticleDataAggregator ada;
   private final PhotoIndexAggregator pia;
   private final Context context;
+  private final ArticleContentCache cache;
 
+  public ArticleContentParser(Context context, SiteContent siteContent) {
+    this(context, siteContent, ArticleContentCache.getInstance());
+  }
 
-  ArticleContentParser(Context context, SiteContent siteContent) {
+  ArticleContentParser(Context context, SiteContent siteContent, ArticleContentCache cache) {
     this.context = context;
+    this.cache = cache;
     this.ada = siteContent.getArticleAggregator(context);
     this.pia = siteContent.getPhotoAggregator();
   }
 
   @SuppressWarnings("unchecked")
-  public List<Element> getFormatedPages(String articleId, FormatLevel formatLevel, Namespace ns) throws IOException, ClassNotFoundException {
+  public List<Element> getFormattedPages(String articleId, FormatLevel formatLevel, Namespace ns) throws IOException, ClassNotFoundException {
     final ArticleMeta meta = new ArticleMeta(articleId, formatLevel, ada.getDivision());
-    final ArticleContentCache cache = ArticleContentCache.getInstance();
     if (!cache.cacheHit(meta, ada.getReader(articleId).lastModified())) {
-      ArticleContent content = generateArticleContent(articleId, formatLevel, ns, meta, cache);
+      ArticleContent content = generateArticleContent(articleId, formatLevel, ns, meta);
       return content.getParagraph();
     } else {
       ArticleContent content = null;
@@ -62,13 +66,14 @@ class ArticleContentParser {
         System.err.println(e.getMessage() + " However, this error is handled and cache is abandoned.");
       }
       if (content == null) {
-        content = generateArticleContent(articleId, formatLevel, ns, meta, cache);
+        content = generateArticleContent(articleId, formatLevel, ns, meta);
       }
       return content.getParagraph();
     }
   }
 
-  private ArticleContent generateArticleContent(String articleId, FormatLevel formatLevel, Namespace ns, ArticleMeta meta, ArticleContentCache cache)
+  private ArticleContent generateArticleContent(
+      String articleId, FormatLevel formatLevel, Namespace ns, ArticleMeta meta)
       throws IOException {
     int workingArticleIdBackup = ada.getCurrentWorkingArticleId();
     ada.setCurrentWorkingArticleId(Integer.parseInt(articleId));
@@ -80,9 +85,8 @@ class ArticleContentParser {
 
   public List<Element> getPageSubtitles(String articleId, Namespace ns) throws IOException, ClassNotFoundException {
     final ArticleMeta meta = new ArticleMeta(articleId, FormatLevel.FULL, ada.getDivision());
-    final ArticleContentCache cache = ArticleContentCache.getInstance();
     if (!cache.cacheHit(meta, ada.getReader(articleId).lastModified())) {
-      getFormatedPages(articleId, FormatLevel.FULL, ns);
+      getFormattedPages(articleId, FormatLevel.FULL, ns);
     }
     ArticleIndex ai = ((ArticleContent) cache.get(meta)).getIndex();
     return ai.getSubtitles();
@@ -92,7 +96,7 @@ class ArticleContentParser {
       throws IOException {
     ArticleContent articleContent = new ArticleContent(ns);
     ArticleDataReader adr = ada.getReader(articleId);
-    String content = adr.getRawContent();
+    String content = adr.getRawContent().trim();
     //{!page!} currently
     Matcher m = PAGE_PATTERN.matcher(content);
     int start = 0;
@@ -125,7 +129,7 @@ class ArticleContentParser {
       pageE.addContent(new Element("p", ns).setAttribute("class", "timestamp").setText("(" + adr.getDisplayTime() + ")"));
       articleIndex.attach(pageE);
     }
-    Matcher m = PARAGRAPH_PATTHERN_1.matcher(pageRawContent);
+    Matcher m = PARAGRAPH_PATTERN_1.matcher(pageRawContent);
     int start = 0;
     while (m.find()) {
       handleOneParagraph(pageE, pageRawContent.substring(start, m.start()), formatLevel, ns);
@@ -300,13 +304,11 @@ class ArticleContentParser {
     Matcher m = SENTENCE_PATTERN_1.matcher(paragraph);
     int start = 0;
     while (m.find()) {
-      handleOneSentence(pE, paragraph.substring(start, m.start()), ns, formatLevel);
-      if (m.start() != 0 && m.end() != paragraph.length()) {
-        handleSentenceTag(pE, m.group(1), formatLevel, ns);
-      }
+      handleOneSentence(pE, paragraph.substring(start, m.start()), formatLevel);
+      handleSentenceTag(pE, m.group(1), formatLevel, ns);
       start = m.end();
     }
-    handleOneSentence(pE, paragraph.substring(start), ns, formatLevel);
+    handleOneSentence(pE, paragraph.substring(start), formatLevel);
     if (pE.getChildren().size() > 0 || !Utils.isEmptyString(pE.getTextTrim())) {
       switch (formatLevel) {
         case FULL: {
@@ -372,10 +374,7 @@ class ArticleContentParser {
     }
   }
 
-  private void handleOneSentence(Element pE, String sentence, Namespace ns, FormatLevel formatLevel) {
-    if (Utils.isEmptyString(sentence.trim())) {
-      return;
-    }
+  private void handleOneSentence(Element pE, String sentence, FormatLevel formatLevel) {
     boolean indent = false;
     if (pE.getContent() == null || pE.getContent().size() == 0) {
       indent = true;

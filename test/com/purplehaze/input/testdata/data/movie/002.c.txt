@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>summer</id>
+    <time>2007/1/29 14:10</time>
+    <Text>美死你#￥%……</Text>
+  </comment>
+  <comment>
+    <id>Purplexsu</id>
+    <time>2007/1/29 10:14</time>
+    <Text>同情起当妈的来了,说明你也到了当妈的年龄:)</Text>
+  </comment>
+  <comment>
+    <id>summer</id>
+    <time>2007/1/27 23:06</time>
+    <Text>记不清上次在电影院里哭是什么时候的事了，我在你旁边哭一定吓到你了。老赵把厚厚的百元假钞当冥纸烧给洪启文的时候，要是我在他旁边也绝对说不出生有可恋这句话，还有宋丹丹的眼泪，唉，心越来越软了，不知是不是年纪大了。</Text>
+  </comment>
+</comments>
+

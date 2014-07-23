@@ -95,7 +95,7 @@ public abstract class AbstractArticleManager {
     Document doc = context.getFileManager().nonValidatedBuild(context.getArticleTemplateFile());
     Namespace ns = doc.getRootElement().getNamespace();
     List<Element> pages = new ArticleContentParser(context, siteContent)
-        .getFormatedPages(articleId, FormatLevel.FULL, ns);
+        .getFormattedPages(articleId, FormatLevel.FULL, ns);
     int totalPageCount = pages.size();
     for (int i = 0; i < totalPageCount; i++) {
       Element pageE = pages.get(i);

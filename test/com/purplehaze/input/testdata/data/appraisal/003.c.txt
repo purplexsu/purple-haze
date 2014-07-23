@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>Summer</id>
+    <time>2007/9/11 19:57</time>
+    <Text>强烈举牌！去再~</Text>
+  </comment>
+</comments>
+

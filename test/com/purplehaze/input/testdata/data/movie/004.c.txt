@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>summer</id>
+    <time>2007/2/5 20:39</time>
+    <Text>为什么我就遇不到精灵呢，遇到的全是些鬼，哎</Text>
+  </comment>
+  <comment>
+    <id>summer</id>
+    <time>2007/2/5 20:38</time>
+    <Text>真想再看一次，以后的周末要多多起早看电影，才不辜负大好光阴。我也赞一个！</Text>
+  </comment>
+</comments>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>R</id>
+    <time>2007/1/15 15:59</time>
+    <Text>一看你就又把我庸俗且妖魔化了</Text>
+  </comment>
+  <comment>
+    <id>Purplexsu</id>
+    <time>2007/1/13 21:41</time>
+    <Text>Roxie同学,如果你看到了Lee同学的英文留言,请速将其翻译成中文并深入理解其含义&#xD;
+谢谢</Text>
+  </comment>
+  <comment>
+    <id>Lionel Lee</id>
+    <time>2007/1/13 13:12</time>
+    <Text>Feng Ge, I have no your numbe now, contact me pls, 13810802834. Of cousre, I want to google, but I have no C\C++ background and I am not familiar with algorithm. :(&#xD;
+&#xD;
+I have interviewed the WBI, but the result is not sure. I need more interviews. &#xD;
+&#xD;
+BTW, the MM you metioned , will you introduce me to her, hehe , tell her I am a poor guy.</Text>
+  </comment>
+  <comment>
+    <id>Purplexsu</id>
+    <time>2007/1/11 10:09</time>
+    <Text>真的想回来了?&#xD;
+那发份简历给我啊.&#xD;
+ &#xD;
+为啥不投google啊,一直在招人</Text>
+  </comment>
+  <comment>
+    <id>（没有名字）</id>
+    <time>2007/1/10 22:33</time>
+    <Text>你什么时候回IBM了,赶紧推荐我,人家找工作很急啊</Text>
+  </comment>
+</comments>
+

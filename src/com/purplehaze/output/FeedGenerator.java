@@ -92,7 +92,7 @@ public class FeedGenerator {
     } else {
       final Context context = new Context(this.context, ada.getDivision());
       List<Element> rawPages = new ArticleContentParser(context, siteContent)
-          .getFormatedPages(articleId, FormatLevel.SNIPPET, null);
+          .getFormattedPages(articleId, FormatLevel.SNIPPET, null);
       summaries = new String[rawPages.size()];
       for (int i = 0; i < summaries.length; i++) {
         StringWriter sw = new StringWriter();

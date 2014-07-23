@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>心如止水，爱如明镜</id>
+    <time>2007/8/6 10:27</time>
+    <Text>广安门西北角路边边“红鼻子桂林米粉”的老友炒河粉很不错，还有经典的拌粉，都要点卤汁，拌着特香。&#xD;
+酸笋是广西菜的特色，嘿嘿！我也喜欢！</Text>
+  </comment>
+  <comment>
+    <id>陈不悔</id>
+    <time>2007/7/18 21:26</time>
+    <Text>太过分了，你日子也太悠闲了吧，成天吃喝玩乐的</Text>
+  </comment>
+  <comment>
+    <id>Summer</id>
+    <time>2007/7/18 18:11</time>
+    <Text>晋级晋级！就是太辣了受不了~</Text>
+  </comment>
+</comments>
+

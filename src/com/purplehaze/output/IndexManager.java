@@ -57,7 +57,7 @@ public class IndexManager {
     String snippetText = lastOne.getSnippet();
     if (Utils.isEmptyString(snippetText)) {
       snippetText = new ArticleContentParser(context, siteContent)
-          .getFormatedPages(lastOne.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
+          .getFormattedPages(lastOne.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
       int snippetLength = Math.min(74, snippetText.length());
       snippetText = snippetText.substring(0, snippetLength) + Translations.SUSPENSION_POINTS;
     }

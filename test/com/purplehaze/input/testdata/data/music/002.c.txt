@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>Rhapsody_C</id>
+    <time>2006/5/18 22:43</time>
+    <Text>Secret Garden 蹂躏了我对轻音乐的感觉，感觉在chaos中更能放松自己。&#xD;
+ &#xD;
+看了你写心里又痒痒的想听……</Text>
+  </comment>
+</comments>
+

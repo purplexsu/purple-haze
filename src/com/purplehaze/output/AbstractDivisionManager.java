@@ -112,7 +112,7 @@ public abstract class AbstractDivisionManager {
       final String snippet = reader.getSnippet();
       if (Utils.isEmptyString(snippet)) {
         Element htmlE = new ArticleContentParser(context, siteContent)
-            .getFormatedPages(reader.getArticleId(), FormatLevel.SNIPPET, ns).get(0);
+            .getFormattedPages(reader.getArticleId(), FormatLevel.SNIPPET, ns).get(0);
         List content = htmlE.removeContent();
         int count = 0;
         for (Object o : content) {
@@ -298,7 +298,7 @@ public abstract class AbstractDivisionManager {
           String snippet = reader.getSnippet();
           if (snippet == null) {
             snippet = new ArticleContentParser(context, siteContent)
-                .getFormatedPages(reader.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
+                .getFormattedPages(reader.getArticleId(), FormatLevel.RAW, ns).get(0).getTextTrim();
             snippet = snippet.substring(0, Math.min(new Random().nextInt(20) + 40, snippet.length()))
                 + Translations.SUSPENSION_POINTS;
           }

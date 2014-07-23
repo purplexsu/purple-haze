@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>Victor</id>
+    <time>2006/6/5 11:09</time>
+    <Text>这是我最喜欢的一张专辑了。百听不厌。。。</Text>
+  </comment>
+</comments>
+

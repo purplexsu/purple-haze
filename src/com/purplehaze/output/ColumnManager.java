@@ -46,7 +46,7 @@ public class ColumnManager {
     String snippet = adr.getSnippet();
     if (snippet == null) {
       snippet = new ArticleContentParser(context, siteContent)
-          .getFormatedPages(adr.getArticleId(), FormatLevel.RAW, null).get(0).getTextTrim();
+          .getFormattedPages(adr.getArticleId(), FormatLevel.RAW, null).get(0).getTextTrim();
       snippet = snippet.substring(0, Math.min(new Random().nextInt(20) + 50, snippet.length()))
           + Translations.SUSPENSION_POINTS;
     }

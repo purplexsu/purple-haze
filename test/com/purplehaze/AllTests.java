@@ -1,6 +1,7 @@
 package com.purplehaze;
 
 import com.purplehaze.input.ArticleDataAggregatorTest;
+import com.purplehaze.output.ArticleContentParserTest;
 import com.purplehaze.output.CleanCommentProcessorTest;
 import com.purplehaze.output.DivisionPageInfoTest;
 import junit.framework.TestFailure;
@@ -15,6 +16,7 @@ import java.util.Enumeration;
 public class AllTests {
 
   private static Class[] tests = {
+      ArticleContentParserTest.class,
       ArticleDataAggregatorTest.class,
       CleanCommentProcessorTest.class,
       ContextTest.class,

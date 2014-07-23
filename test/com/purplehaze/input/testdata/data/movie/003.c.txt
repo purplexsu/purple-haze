@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <id>summer</id>
+    <time>2007/2/1 9:44</time>
+    <Text>我也觉得这个最好看，板牙最棒・</Text>
+  </comment>
+</comments>
+
