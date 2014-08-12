@@ -140,7 +140,8 @@ public class ArticleContentParserTest extends TestCase {
         "<p>" +
         CHINESE_INDENT + "第<b>一</b>段<br />" +
         CHINESE_INDENT + "换行" +
-        "<a href=\"../travel/article-001.html\">段尾站内链接</a>" +
+        "<a href=\"../travel/article-001.html\">段尾站内链接</a><br />" +
+        CHINESE_INDENT + "<span class=\"capital\">首</span>字母加大" +
         "</p>" +
         "<p>" +
         CHINESE_INDENT + "<b>第</b>二段<br />" +
@@ -162,6 +163,7 @@ public class ArticleContentParserTest extends TestCase {
         + CHINESE_INDENT + "第<b>一</b>段<br />"
         + CHINESE_INDENT + "换行"
         + "<a href=\"../travel/article-001.html\">段尾站内链接</a><br />"
+        + CHINESE_INDENT + "首字母加大<br />"
         + CHINESE_INDENT + "<b>第</b>二段<br />"
         + CHINESE_INDENT + "换行"
         + "<a rel=\"external\" href=\"http://example.com\">站外链接</a><br />"
@@ -175,7 +177,7 @@ public class ArticleContentParserTest extends TestCase {
     StringWriter sw = new StringWriter();
     assertEquals(1, pages.size());
     output.output(pages.get(0), sw);
-    String expected = "<html>第一段换行段尾站内链接第二段换行站外链接</html>";
+    String expected = "<html>第一段换行段尾站内链接首字母加大第二段换行站外链接</html>";
     assertEquals(expected, sw.toString());
   }
 }

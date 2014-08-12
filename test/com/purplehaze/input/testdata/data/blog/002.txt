@@ -6,6 +6,7 @@ columns=henan,shaanxi,hebei
 
 第{#b{一}#}段
 换行{#a{travel/article-001.html|段尾站内链接}#}
+{#c{首}#}字母加大
 
 {#b{第}#}二段
 换行{#a{http://example.com|站外链接}#}

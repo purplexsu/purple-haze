@@ -400,6 +400,20 @@ class ArticleContentParser {
           break;
         }
       }
+      return;
+    }
+    if ("c".equalsIgnoreCase(type)) {
+      switch (formatLevel) {
+        case FULL: {
+          pE.addContent(new Element("span", ns).setAttribute("class", "capital").setText(data));
+          break;
+        }
+        case SNIPPET:
+        case RAW: {
+          pE.addContent(data);
+          break;
+        }
+      }
     }
   }
 
