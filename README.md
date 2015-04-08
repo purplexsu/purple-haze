@@ -1,0 +1,2 @@
+# purple-haze
+My blog.
