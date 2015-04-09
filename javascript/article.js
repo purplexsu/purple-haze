@@ -1,5 +1,6 @@
 goog.provide('net.purplexsu.ArticlePage');
 
+goog.require('goog.dom');
 goog.require('net.purplexsu.Page');
 
 
@@ -19,7 +20,6 @@ net.purplexsu.ArticlePage.prototype.renderInternal = function() {
   this.externalLinks_();
   this.constructEmail_();
 };
-
 
 /**
  * Add target=_blank to external links.

@@ -92,7 +92,10 @@ def ZipIndex(zip):
 
 def ZipJavascript(zip):
   zip.write(BASE_DIR + '/' + 'article.js', 'article.js')
+  zip.write(BASE_DIR + '/' + 'column.js', 'column.js')
   zip.write(BASE_DIR + '/' + 'comment.js', 'comment.js')
+  zip.write(BASE_DIR + '/' + 'division.js', 'division.js')
+  zip.write(BASE_DIR + '/' + 'index.js', 'index.js')
   zip.write(BASE_DIR + '/' + 'photo.js', 'photo.js')
  
 def Upload(targetfile, credential):

@@ -317,7 +317,7 @@ class ArticleContentParser {
     if (Utils.isEmptyString(paragraph)) {
       return;
     }
-    Element pE = new Element("p", ns);
+    Element pE = new Element("p", ns).setAttribute("class", "article_text");
     Matcher m = SENTENCE_PATTERN_1.matcher(paragraph);
     int start = 0;
     while (m.find()) {

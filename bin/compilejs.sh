@@ -22,8 +22,11 @@ then
 fi
 
 compile_js "net.purplexsu.ArticlePage" "article.js" "${output_mode}"
-compile_js "net.purplexsu.PhotoPage" "photo.js" "${output_mode}"
+compile_js "net.purplexsu.ColumnPage" "column.js" "${output_mode}"
 compile_js "net.purplexsu.CommentPage" "comment.js" "${output_mode}"
+compile_js "net.purplexsu.DivisionPage" "division.js" "${output_mode}"
+compile_js "net.purplexsu.IndexPage" "index.js" "${output_mode}"
+compile_js "net.purplexsu.PhotoPage" "photo.js" "${output_mode}"
 
 if [ "${output_mode}" != "script" ]
 then

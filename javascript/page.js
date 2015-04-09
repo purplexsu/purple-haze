@@ -2,9 +2,11 @@ goog.provide('net.purplexsu.Page');
 
 goog.require('goog.Disposable');
 goog.require('goog.dom');
+goog.require('goog.dom.classlist');
 goog.require('goog.events');
 goog.require('goog.events.EventHandler');
 goog.require('goog.events.KeyCodes');
+goog.require('goog.userAgent');
 
 /**
  * Define the base class for a page.
@@ -31,7 +33,20 @@ net.purplexsu.Page.prototype.render = function() {
       window.document,
       goog.events.EventType.KEYDOWN,
       this.handleKeyDown_);
+  this.setPageMode_();
   this.renderInternal();
+};
+
+net.purplexsu.Page.prototype.setPageMode_ = function() {
+  var outline = goog.dom.getElementByClass('outline');
+  if (!outline) {
+    return;
+  }
+  if (goog.userAgent.MOBILE) {
+    goog.dom.classlist.add(outline, 'mobile');
+  } else {
+    goog.dom.classlist.add(outline, 'pc');
+  }
 };
 
 /**
