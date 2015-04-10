@@ -209,6 +209,9 @@ public abstract class AbstractArticleManager {
     // set menu focus
     Utils.setMenuFocus(doc, context.getDivision());
 
+    // write page metadata
+    writeDocMeta(doc, adr, ns);
+
     //set comment link
     writeCommentLink(doc, adr, ns);
 
@@ -225,6 +228,15 @@ public abstract class AbstractArticleManager {
     StringWriter sw = new StringWriter();
     output.output(content, sw);
     handleMetaInfo(doc, Utils.stripHtmlTags(sw.toString()));
+  }
+
+  private void writeDocMeta(Document doc, ArticleDataReader adr, Namespace ns) {
+    Element html = doc.getRootElement();
+    Element head = html.getChild("head", ns);
+    String style = adr.getStyle();
+    if (style != null) {
+      head.addContent(new Element("style", ns).setText(adr.getStyle()));
+    }
   }
 
   private void writeRelatedArticleLinks(Document doc, Namespace ns) {

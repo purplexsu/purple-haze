@@ -74,6 +74,14 @@ public class ArticleDataReader {
     return meta.getProperty("title").trim();
   }
 
+  public String getStyle() {
+    if (meta.containsKey("style")) {
+      return meta.getProperty("style").trim();
+    } else {
+      return null;
+    }
+  }
+
   public String getTime() {
     return meta.getProperty("time").trim();
   }
