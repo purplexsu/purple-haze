@@ -120,25 +120,8 @@ public class IndexManager {
   }
 
   private void writeOneAlbumSnippet(Element divE, Namespace ns, PhotoIndexAggregator pia, int albumId) {
-    PhotoIndexReader lastOne = pia.getReader(albumId);
-    String title = lastOne.getTitle() + "(" + lastOne.getTags().size() + ")";
-    String snippetImg = "photo/" + lastOne.getAlbumId() + "/snippet.jpg";
-    String link = "photo/" + lastOne.getAlbumId() + "/index.html";
-
-    Element snippetDiv = new Element("div", ns).setAttribute("class", "snippetunit");
-    snippetDiv.addContent(new Element("img", ns)
-        .setAttribute("width", "90")
-        .setAttribute("height", "60")
-        .setAttribute("alt", title)
-        .setAttribute("title", title)
-        .setAttribute("src", snippetImg));
-    snippetDiv.addContent(new Element("div", ns)
-        .setAttribute("class", "caption")
-        .addContent(new Element("a", ns)
-            .setText(title)
-            .setAttribute("href", link))
-        .addContent(new Element("br", ns)));
-    divE.addContent(snippetDiv);
+    PhotoIndexReader pir = pia.getReader(albumId);
+    PhotoSnippet ps = new PhotoSnippet("photo/" + pir.getAlbumId(), pir.getTitle(), pir.getTags().size());
+    ps.write(divE, ns);
   }
-
 }

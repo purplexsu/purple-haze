@@ -38,15 +38,8 @@ net.purplexsu.Page.prototype.render = function() {
 };
 
 net.purplexsu.Page.prototype.setPageMode_ = function() {
-  var outline = goog.dom.getElementByClass('outline');
-  if (!outline) {
-    return;
-  }
-  if (goog.userAgent.MOBILE) {
-    goog.dom.classlist.add(outline, 'mobile');
-  } else {
-    goog.dom.classlist.add(outline, 'pc');
-  }
+  var style = goog.userAgent.MOBILE ? 'mobile' : 'pc';
+  goog.dom.classlist.add(document.body, style);
 };
 
 /**

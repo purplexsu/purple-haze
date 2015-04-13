@@ -347,19 +347,8 @@ public abstract class AbstractDivisionManager {
         }
         int photoCount = currentPir.getTags().size();
         String subDirName = Utils.formatInteger(current, 3);
-        Element cellDivE = new Element("div", ns);
-        cellDivE.addContent(new Element("img", ns)
-            .setAttribute("height", "60")
-            .setAttribute("width", "90")
-            .setAttribute("src", subDirName + "/snippet.jpg")
-            .setAttribute("alt", currentPir.getTitle()));
-        cellDivE.addContent(new Element("br", ns));
-        cellDivE.addContent(new Element("a", ns)
-            .setAttribute("href", subDirName + "/index.html")
-            .addContent(currentPir.getTitle())
-            .addContent(new Element("br", ns))
-            .addContent("(" + photoCount + ")"));
-        divE.addContent(cellDivE);
+        PhotoSnippet ps = new PhotoSnippet(subDirName, currentPir.getTitle(), photoCount);
+        ps.write(divE, ns);
         System.out.print('#');
       }
 
