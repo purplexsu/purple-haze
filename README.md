@@ -1,2 +1,2 @@
 # purple-haze
-My blog.
+My blog http://www.purplexsu.net/.
