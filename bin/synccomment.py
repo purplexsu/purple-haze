@@ -9,7 +9,7 @@ import tempfile
 import urllib2
 import zipfile
 
-BASE_DIR = os.environ['HOME'] + '/My Webs/PurpleHaze/'
+BASE_DIR = os.environ['HOME'] + '/Google Drive/My Webs/PurpleHaze/'
 
 TMP_ZIP_FILE = tempfile.gettempdir() + '/comment.zip'
 

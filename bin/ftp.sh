@@ -18,6 +18,6 @@ then
 fi
 ftp_user=`get_credential "ftp.username"`
 ftp_pwd=`get_credential "ftp.password"`
-cd "/Users/frankxue/My Webs/PurpleHaze/$relative_path"
+cd "/Users/frankxue/Google Drive/My Webs/PurpleHaze/$relative_path"
 ftp ftp://${ftp_user}:${ftp_pwd}@ftp.purplexsu.net/www/$relative_path
 popd

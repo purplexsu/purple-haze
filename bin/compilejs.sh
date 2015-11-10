@@ -1,8 +1,8 @@
 #!/bin/bash
 # Author: purplexsu
 
-project_dir="${HOME}/Projects/Pro052"
-web_dir="${HOME}/My Webs"
+project_dir="${HOME}/Projects/PurpleHaze"
+web_dir="${HOME}/Google Drive/My Webs"
 
 function compile_js() {
   python ${project_dir}/closure-library/closure/bin/build/closurebuilder.py \
