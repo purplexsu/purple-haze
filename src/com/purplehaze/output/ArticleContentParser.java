@@ -283,16 +283,15 @@ class ArticleContentParser {
         switch (formatLevel) {
           case FULL: {
             pageE.addContent(new Element("p", ns).setAttribute("class", "article_photo")
-                .addContent(new Element("embed", ns)
+                .addContent(new Element("iframe", ns)
                         .setAttribute("src",
-                            "http://player.youku.com/player.php/sid/" + id + "/v.swf")
+                            "http://player.youku.com/embed/" + id)
                         .setAttribute("allowFullScreen", "true")
-                        .setAttribute("quality", "high")
+                        .setAttribute("frameborder", "0")
                         .setAttribute("width", width)
                         .setAttribute("height", height)
                         .setAttribute("align", "middle")
-                        .setAttribute("allowScriptAccess", "always")
-                        .setAttribute("type", "application/x-shockwave-flash")
+                        .addContent(new EntityRef("nbsp"))
                 ));
             break;
           }
