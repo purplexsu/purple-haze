@@ -94,7 +94,8 @@ public abstract class AbstractArticleManager {
     String articleId = adr.getArticleId();
     Document doc = context.getFileManager().nonValidatedBuild(context.getArticleTemplateFile());
     Namespace ns = doc.getRootElement().getNamespace();
-    List<Element> pages = new ArticleContentParser(context, siteContent)
+    // Use a one-off in memory cache so that current working article could be rewritten always.
+    List<Element> pages = new ArticleContentParser(context, siteContent, new InMemoryContentCache())
         .getFormattedPages(articleId, FormatLevel.FULL, ns);
     int totalPageCount = pages.size();
     for (int i = 0; i < totalPageCount; i++) {

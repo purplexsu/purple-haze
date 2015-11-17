@@ -44,7 +44,7 @@ class ArticleContentParser {
   private final ArticleContentCache cache;
 
   public ArticleContentParser(Context context, SiteContent siteContent) {
-    this(context, siteContent, ArticleContentCache.getInstance());
+    this(context, siteContent, PersistedContentCache.getInstance());
   }
 
   ArticleContentParser(Context context, SiteContent siteContent, ArticleContentCache cache) {
