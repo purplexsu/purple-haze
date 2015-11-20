@@ -39,7 +39,6 @@ public class ArticleDataAggregatorTest extends TestCase {
       assertEquals(ada.getReader(119), relatedReaders.get(1));
       assertEquals(ada.getReader(111), relatedReaders.get(2));
       assertEquals(ada.getReader(94), relatedReaders.get(3));
-      assertEquals(ada.getReader(93), relatedReaders.get(4));
     }
     {
       final ArticleDataReader reader = ada.getReader(126);
@@ -48,25 +47,22 @@ public class ArticleDataAggregatorTest extends TestCase {
       assertEquals(ada.getReader(115), relatedReaders.get(1));
       assertEquals(ada.getReader(109), relatedReaders.get(2));
       assertEquals(ada.getReader(95), relatedReaders.get(3));
-      assertEquals(ada.getReader(81), relatedReaders.get(4));
-    }
-    {
-      final ArticleDataReader reader = ada.getReader(81);
-      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
-      assertEquals(ada.getReader(126), relatedReaders.get(0));
-      assertEquals(ada.getReader(115), relatedReaders.get(1));
-      assertEquals(ada.getReader(109), relatedReaders.get(2));
-      assertEquals(ada.getReader(95), relatedReaders.get(3));
-      assertEquals(ada.getReader(61), relatedReaders.get(4));
     }
     {
       final ArticleDataReader reader = ada.getReader(95);
       final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
-      assertEquals(ada.getReader(127), relatedReaders.get(0));
-      assertEquals(ada.getReader(126), relatedReaders.get(1));
-      assertEquals(ada.getReader(115), relatedReaders.get(2));
-      assertEquals(ada.getReader(109), relatedReaders.get(3));
-      assertEquals(ada.getReader(81), relatedReaders.get(4));
+      assertEquals(ada.getReader(126), relatedReaders.get(0));
+      assertEquals(ada.getReader(115), relatedReaders.get(1));
+      assertEquals(ada.getReader(109), relatedReaders.get(2));
+      assertEquals(ada.getReader(81), relatedReaders.get(3));
+    }
+    {
+      final ArticleDataReader reader = ada.getReader(81);
+      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
+      assertEquals(ada.getReader(115), relatedReaders.get(0));
+      assertEquals(ada.getReader(109), relatedReaders.get(1));
+      assertEquals(ada.getReader(95), relatedReaders.get(2));
+      assertEquals(ada.getReader(61), relatedReaders.get(3));
     }
   }
 

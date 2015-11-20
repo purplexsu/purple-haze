@@ -12,8 +12,8 @@ import java.util.*;
  * The aggregator of all article data from the same division.
  */
 public class ArticleDataAggregator {
+  private static final int MAX_RELATED_READERS = 4;
 
-  public static final int MAX_RELATED_READERS = 5;
   private Map<Integer, ArticleDataReader> readers = new HashMap<>();
 
   private Map<String, List<ArticleDataReader>> tagIndex = new HashMap<>();
@@ -162,8 +162,8 @@ public class ArticleDataAggregator {
   private class MarkableLimitedList<E> {
     private static final int MAX_ELEMENT_AFTER_MARK_WHEN_FULL = 1;
     private final int limit;
-    private int mark = 0;
-    private int overflowedElements = 0;
+    private int mark = -1;
+    private int overflowedElementsAfterMarkedOne = 0;
     private List<E> data = new LinkedList<>();
 
     public MarkableLimitedList(int limit) {
@@ -171,7 +171,9 @@ public class ArticleDataAggregator {
     }
 
     public void add(E element) {
-      if (data.size() >= limit && data.size() + overflowedElements >= mark + MAX_ELEMENT_AFTER_MARK_WHEN_FULL) {
+      if (data.size() >= limit &&
+          mark >= 0 &&
+          data.size() + overflowedElementsAfterMarkedOne >= mark + MAX_ELEMENT_AFTER_MARK_WHEN_FULL) {
         // If the list is ready full, we only allow 1 more element added after mark.
         // 1 = MAX_ELEMENT_AFTER_MARK_WHEN_FULL
         return;
@@ -179,7 +181,9 @@ public class ArticleDataAggregator {
       data.add(element);
       if (data.size() > limit) {
         data.remove(0);
-        overflowedElements++;
+        if (mark >= 0) {
+          overflowedElementsAfterMarkedOne++;
+        }
       }
     }
 

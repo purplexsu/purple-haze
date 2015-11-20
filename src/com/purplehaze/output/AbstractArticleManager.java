@@ -35,9 +35,6 @@ import static com.purplehaze.output.Translations.*;
  * Output manager for all article files.
  */
 public abstract class AbstractArticleManager {
-
-  private static final int MAX_RELATED_ARTICLES = 4;
-
   protected final SiteContent siteContent;
   protected final Context context;
 
@@ -258,9 +255,6 @@ public abstract class AbstractArticleManager {
               new Element("a", ns)
                   .setText(related.getFullTitle())
                   .setAttribute("href", Utils.getArticleFileName(related.getArticleId()))));
-      if (++i >= MAX_RELATED_ARTICLES) {
-        break;
-      }
     }
   }
 
