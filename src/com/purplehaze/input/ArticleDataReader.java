@@ -160,6 +160,11 @@ public class ArticleDataReader {
   }
 
   @Override
+  public String toString() {
+    return getFullTitle() + "(" + getDataFile() + ")";
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (o instanceof ArticleDataReader) {
       ArticleDataReader other = (ArticleDataReader) o;

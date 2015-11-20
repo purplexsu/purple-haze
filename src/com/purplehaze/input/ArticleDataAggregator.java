@@ -6,15 +6,7 @@ import com.purplehaze.FileNameFilter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The aggregator of all article data from the same division.
@@ -22,11 +14,11 @@ import java.util.Set;
 public class ArticleDataAggregator {
 
   public static final int MAX_RELATED_READERS = 5;
-  private Map<Integer, ArticleDataReader> readers = new HashMap<Integer, ArticleDataReader>();
+  private Map<Integer, ArticleDataReader> readers = new HashMap<>();
 
-  private Map<String, List<ArticleDataReader>> tagIndex = new HashMap<String, List<ArticleDataReader>>();
+  private Map<String, List<ArticleDataReader>> tagIndex = new HashMap<>();
 
-  private Map<String, List<ArticleDataReader>> columnIndex = new HashMap<String, List<ArticleDataReader>>();
+  private Map<String, List<ArticleDataReader>> columnIndex = new HashMap<>();
 
   private Context context;
 
@@ -75,18 +67,23 @@ public class ArticleDataAggregator {
   }
 
   public List<ArticleDataReader> getRelatedReaders(ArticleDataReader reader) {
-    final LinkedHashSet<ArticleDataReader> result = new LinkedHashSet<ArticleDataReader>();
+    final MarkableLimitedList<ArticleDataReader> result = new MarkableLimitedList<>(MAX_RELATED_READERS);
+    final HashSet<ArticleDataReader> addedReaders = new HashSet<>();
+    // We want to make sure at least one older reader is added to the related readers if there is.
     for (String tag : reader.getTags()) {
-      for (ArticleDataReader relatedReader : tagIndex.get(tag)) {
-        if (!relatedReader.equals(reader)) {
-          result.add(relatedReader);
+      for (ArticleDataReader relatedReader :  tagIndex.get(tag)) {
+        if (addedReaders.contains(relatedReader)) {
+          continue;
         }
-        if (result.size() >= MAX_RELATED_READERS) {
-          return new LinkedList<ArticleDataReader>(result);
+        addedReaders.add(relatedReader);
+        if (relatedReader.equals(reader)) {
+          result.mark();
+        } else {
+          result.add(relatedReader);
         }
       }
     }
-    return new LinkedList<ArticleDataReader>(result);
+    return result.toList();
   }
 
   /**
@@ -159,6 +156,39 @@ public class ArticleDataAggregator {
       return ada.context.getDivision() == context.getDivision();
     } else {
       return false;
+    }
+  }
+
+  private class MarkableLimitedList<E> {
+    private static final int MAX_ELEMENT_AFTER_MARK_WHEN_FULL = 1;
+    private final int limit;
+    private int mark = 0;
+    private int overflowedElements = 0;
+    private List<E> data = new LinkedList<>();
+
+    public MarkableLimitedList(int limit) {
+      this.limit = limit;
+    }
+
+    public void add(E element) {
+      if (data.size() >= limit && data.size() + overflowedElements >= mark + MAX_ELEMENT_AFTER_MARK_WHEN_FULL) {
+        // If the list is ready full, we only allow 1 more element added after mark.
+        // 1 = MAX_ELEMENT_AFTER_MARK_WHEN_FULL
+        return;
+      }
+      data.add(element);
+      if (data.size() > limit) {
+        data.remove(0);
+        overflowedElements++;
+      }
+    }
+
+    public void mark() {
+      mark = data.size();
+    }
+
+    public List<E> toList() {
+      return Collections.unmodifiableList(data);
     }
   }
 }

@@ -34,29 +34,40 @@ public class ArticleDataAggregatorTest extends TestCase {
   public void testGetRelatedReader() throws IOException {
     {
       final ArticleDataReader reader = ada.getReader(90);
-      assertEquals(ada.getReader(83), ada.getRelatedReaders(reader).get(0));
-      assertEquals(ada.getReader(119), ada.getRelatedReaders(reader).get(1));
-      assertEquals(ada.getReader(111), ada.getRelatedReaders(reader).get(2));
-      assertEquals(ada.getReader(94), ada.getRelatedReaders(reader).get(3));
-      assertEquals(ada.getReader(93), ada.getRelatedReaders(reader).get(4));
+      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
+      assertEquals(ada.getReader(83), relatedReaders.get(0));
+      assertEquals(ada.getReader(119), relatedReaders.get(1));
+      assertEquals(ada.getReader(111), relatedReaders.get(2));
+      assertEquals(ada.getReader(94), relatedReaders.get(3));
+      assertEquals(ada.getReader(93), relatedReaders.get(4));
     }
     {
       final ArticleDataReader reader = ada.getReader(126);
-      assertEquals(ada.getReader(115), ada.getRelatedReaders(reader).get(0));
-      assertEquals(ada.getReader(109), ada.getRelatedReaders(reader).get(1));
-      assertEquals(ada.getReader(95), ada.getRelatedReaders(reader).get(2));
-      assertEquals(ada.getReader(81), ada.getRelatedReaders(reader).get(3));
-      assertEquals(ada.getReader(61), ada.getRelatedReaders(reader).get(4));
+      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
+      assertEquals(ada.getReader(127), relatedReaders.get(0));
+      assertEquals(ada.getReader(115), relatedReaders.get(1));
+      assertEquals(ada.getReader(109), relatedReaders.get(2));
+      assertEquals(ada.getReader(95), relatedReaders.get(3));
+      assertEquals(ada.getReader(81), relatedReaders.get(4));
     }
-  /*  for (ArticleDataReader reader : ada.getReaders()) {
-      System.out.println(reader.getArticleId()+reader.getTitle());
-      System.out.println("+++++++++++++++++++++++++++");
-      for (ArticleDataReader related : ada.getRelatedReaders(reader)) {
-        System.out.println(related.getArticleId()+related.getTitle());
-      }
-      System.out.println("=================================");
-    }*/
-    System.out.println();
+    {
+      final ArticleDataReader reader = ada.getReader(81);
+      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
+      assertEquals(ada.getReader(126), relatedReaders.get(0));
+      assertEquals(ada.getReader(115), relatedReaders.get(1));
+      assertEquals(ada.getReader(109), relatedReaders.get(2));
+      assertEquals(ada.getReader(95), relatedReaders.get(3));
+      assertEquals(ada.getReader(61), relatedReaders.get(4));
+    }
+    {
+      final ArticleDataReader reader = ada.getReader(95);
+      final List<ArticleDataReader> relatedReaders = ada.getRelatedReaders(reader);
+      assertEquals(ada.getReader(127), relatedReaders.get(0));
+      assertEquals(ada.getReader(126), relatedReaders.get(1));
+      assertEquals(ada.getReader(115), relatedReaders.get(2));
+      assertEquals(ada.getReader(109), relatedReaders.get(3));
+      assertEquals(ada.getReader(81), relatedReaders.get(4));
+    }
   }
 
   public void testGetReaders() {
