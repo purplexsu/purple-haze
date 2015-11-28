@@ -1,14 +1,10 @@
 package com.purplehaze.output;
 
-import static com.purplehaze.output.Translations.CHINESE_INDENT;
-
 import com.purplehaze.Context;
 import com.purplehaze.Division;
 import com.purplehaze.TestUtil;
 import com.purplehaze.input.SiteContent;
-
 import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.jdom.Element;
@@ -67,14 +63,14 @@ public class ArticleContentParserTest extends TestCase {
         + "</ul>"
         + "</fieldset>"
         + "<h3 id=\"t831523682\">标题一1</h3>"
-        + "<p class=\"article_text\">" + CHINESE_INDENT + "<b>正</b>文1</p>"
+        + "<p class=\"article_text\"><span><b>正</b>文1</span></p>"
         + "<h4 id=\"t831528023\">标题二2</h4>"
         + "<p class=\"article_photo\">"
         + "<a href=\"../photo/002/02.html\" rel=\"external\">"
         + "<img src=\"../photo/002/02.jpg\" alt=\"箭扣长城 轻装\" id=\"i00202\" />"
         + "</a>"
         + "</p>"
-        + "<p class=\"article_text\">" + CHINESE_INDENT + "正文<b>2</b></p>"
+        + "<p class=\"article_text\"><span>正文<b>2</b></span></p>"
         + "<p class=\"article_photo\">"
         + "<a href=\"../photo/001/01.html\" rel=\"external\">"
         + "<img src=\"../photo/001/01.jpg\" alt=\"湘西凤凰 旅舍\" id=\"i00101\" />"
@@ -84,11 +80,11 @@ public class ArticleContentParserTest extends TestCase {
         + "<p class=\"article_photo\">"
         + "<img src=\"../images/image/icon.jpg\" />"
         + "</p>"
-        + "<p class=\"article_text\">" + CHINESE_INDENT + "正文3</p>"
+        + "<p class=\"article_text\"><span>正文3</span></p>"
         + "<p class=\"article_photo\"><img src=\"http://example.com/image/icon.jpg\" /></p>"
         + "<h3 id=\"t831523683\">标题一2</h3>"
-        + "<p class=\"article_text\">" + CHINESE_INDENT + "正文4</p>"
-        + "<p class=\"article_text\">" + CHINESE_INDENT + "正文5</p>"
+        + "<p class=\"article_text\"><span>正文4</span></p>"
+        + "<p class=\"article_text\"><span>正文5</span></p>"
         + "</html>";
     assertEquals(expected, sw.toString());
   }
@@ -102,18 +98,18 @@ public class ArticleContentParserTest extends TestCase {
     output.output(pages.get(0), sw);
     String expected = "<html>"
         + "标题一1<br />"
-        + CHINESE_INDENT + "<b>正</b>文1<br />"
+        + "<span><b>正</b>文1</span><br />"
         + "标题二2<br />"
         + "&lt;<a href=\"../photo/002/02.html\">箭扣长城 轻装</a>&gt;<br />"
-        + CHINESE_INDENT + "正文<b>2</b><br />"
+        + "<span>正文<b>2</b></span><br />"
         + "&lt;<a href=\"../photo/001/01.html\">湘西凤凰 旅舍</a>&gt;<br />"
         + "标题二2<br />"
         + "&lt;图片&gt;<br />"
-        + CHINESE_INDENT + "正文3<br />"
+        + "<span>正文3</span><br />"
         + "&lt;图片&gt;<br />"
         + "标题一2<br />"
-        + CHINESE_INDENT + "正文4<br />"
-        + CHINESE_INDENT + "正文5<br />"
+        + "<span>正文4</span><br />"
+        + "<span>正文5</span><br />"
         + "</html>";
     assertEquals(expected, sw.toString());
   }
@@ -138,15 +134,15 @@ public class ArticleContentParserTest extends TestCase {
         "<h1>回来喽</h1>" +
         "<p class=\"timestamp\">(2006-2-13 15:36:57)</p>" +
         "<p class=\"article_text\">" +
-        CHINESE_INDENT + "第<b>一</b>段<br />" +
-        CHINESE_INDENT + "换行" +
-        "<a href=\"../travel/article-001.html\">段尾站内链接</a><br />" +
-        CHINESE_INDENT + "<span class=\"capital\">首</span>字母加大" +
+        "<span>第<b>一</b>段</span><br />" +
+        "<span>换行" +
+        "<a href=\"../travel/article-001.html\">段尾站内链接</a></span><br />" +
+        "<span><span class=\"capital\">首</span>字母加大</span>" +
         "</p>" +
         "<p class=\"article_text\">" +
-        CHINESE_INDENT + "<b>第</b>二段<br />" +
-        CHINESE_INDENT + "换行" +
-        "<a rel=\"external\" href=\"http://example.com\">站外链接</a>" +
+        "<span><b>第</b>二段</span><br />" +
+        "<span>换行" +
+        "<a rel=\"external\" href=\"http://example.com\">站外链接</a></span>" +
         "</p>" +
         "</html>";
     assertEquals(expected, sw.toString());
@@ -160,13 +156,13 @@ public class ArticleContentParserTest extends TestCase {
     assertEquals(1, pages.size());
     output.output(pages.get(0), sw);
     String expected = "<html>"
-        + CHINESE_INDENT + "第<b>一</b>段<br />"
-        + CHINESE_INDENT + "换行"
-        + "<a href=\"../travel/article-001.html\">段尾站内链接</a><br />"
-        + CHINESE_INDENT + "首字母加大<br />"
-        + CHINESE_INDENT + "<b>第</b>二段<br />"
-        + CHINESE_INDENT + "换行"
-        + "<a rel=\"external\" href=\"http://example.com\">站外链接</a><br />"
+        + "<span>第<b>一</b>段</span><br />"
+        + "<span>换行"
+        + "<a href=\"../travel/article-001.html\">段尾站内链接</a></span><br />"
+        + "<span>首字母加大</span><br />"
+        + "<span><b>第</b>二段</span><br />"
+        + "<span>换行"
+        + "<a rel=\"external\" href=\"http://example.com\">站外链接</a></span><br />"
         + "</html>";
     assertEquals(expected, sw.toString());
   }

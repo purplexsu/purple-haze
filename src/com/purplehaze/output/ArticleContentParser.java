@@ -3,9 +3,11 @@ package com.purplehaze.output;
 import com.purplehaze.Context;
 import com.purplehaze.Division;
 import com.purplehaze.Utils;
-import com.purplehaze.input.*;
-
-import org.jdom.Content;
+import com.purplehaze.input.ArticleDataAggregator;
+import com.purplehaze.input.ArticleDataReader;
+import com.purplehaze.input.PhotoIndexAggregator;
+import com.purplehaze.input.PhotoIndexReader;
+import com.purplehaze.input.SiteContent;
 import org.jdom.Element;
 import org.jdom.EntityRef;
 import org.jdom.Namespace;
@@ -13,9 +15,7 @@ import org.jdom.Namespace;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,15 +29,11 @@ class ArticleContentParser {
       .compile("(\\n{2,}|(\\{@\\S+\\{.+?\\}@\\}))");
   private static final Pattern PARAGRAPH_PATTERN_2 = Pattern.compile("\\{@(\\S+)\\{(.+)\\}@\\}");
   private static final Pattern PARAGRAPH_PATTERN_3 = Pattern.compile("\\n{2,}");
-  private static final Pattern SENTENCE_PATTERN_1 = Pattern.compile("(\\n|(\\{#.+?#\\}))");
+  private static final Pattern PASSAGE_PATTERN = Pattern.compile("(\\n)");
+  private static final Pattern SENTENCE_PATTERN_1 = Pattern.compile("(\\{#.+?#\\})");
   private static final Pattern SENTENCE_PATTERN_2 = Pattern.compile("\\{#(\\S+)\\{(.+)\\}#\\}");
   private static final Pattern SENTENCE_PATTERN_3 = Pattern.compile("(\\s{2,})");
-  private static final Set<String> INDENT_TAGS = new HashSet<String>() {
-    {
-      add("p");
-      add("br");
-    }
-  };
+
   private final ArticleDataAggregator ada;
   private final PhotoIndexAggregator pia;
   private final Context context;
@@ -316,31 +312,47 @@ class ArticleContentParser {
     if (Utils.isEmptyString(paragraph)) {
       return;
     }
-    Element pE = new Element("p", ns).setAttribute("class", "article_text");
-    Matcher m = SENTENCE_PATTERN_1.matcher(paragraph);
+    Element paragraphE = new Element("p", ns).setAttribute("class", "article_text");
+
+    Matcher m = PASSAGE_PATTERN.matcher(paragraph);
     int start = 0;
     while (m.find()) {
-      handleOneSentence(pE, paragraph.substring(start, m.start()), formatLevel);
-      handleSentenceTag(pE, m.group(1), formatLevel, ns);
+      Element passageE = new Element("span", ns);
+      paragraphE.addContent(passageE).addContent(new Element("br", ns));
+      handleOnePassage(passageE, paragraph.substring(start, m.start()), ns, formatLevel);
       start = m.end();
     }
-    handleOneSentence(pE, paragraph.substring(start), formatLevel);
-    if (pE.getChildren().size() > 0 || !Utils.isEmptyString(pE.getTextTrim())) {
+    Element passageE = new Element("span", ns);
+    paragraphE.addContent(passageE);
+    handleOnePassage(passageE, paragraph.substring(start), ns, formatLevel);
+
+    if (paragraphE.getChildren().size() > 0 || !Utils.isEmptyString(paragraphE.getTextTrim())) {
       switch (formatLevel) {
         case FULL: {
-          pageE.addContent(pE);
+          pageE.addContent(paragraphE);
           break;
         }
         case SNIPPET: {
-          pageE.addContent(pE.removeContent()).addContent(new Element("br", ns));
+          pageE.addContent(paragraphE.removeContent()).addContent(new Element("br", ns));
           break;
         }
         case RAW: {
-          pageE.addContent(pE.getTextTrim());
+          pageE.addContent(Utils.getChildrenTextTrim(paragraphE));
           break;
         }
       }
     }
+  }
+
+  private void handleOnePassage(Element paragraphE, String passage, Namespace ns, FormatLevel formatLevel) {
+    Matcher m = SENTENCE_PATTERN_1.matcher(passage);
+    int start = 0;
+    while (m.find()) {
+      handleOneSentence(paragraphE, passage.substring(start, m.start()), formatLevel);
+      handleSentenceTag(paragraphE, m.group(0), formatLevel, ns);
+      start = m.end();
+    }
+    handleOneSentence(paragraphE, passage.substring(start), formatLevel);
   }
 
   private void handleSentenceTag(Element pE, String tag, FormatLevel formatLevel, Namespace ns) {
@@ -417,24 +429,7 @@ class ArticleContentParser {
   }
 
   private void handleOneSentence(Element pE, String sentence, FormatLevel formatLevel) {
-    boolean indent = false;
-    if (pE.getContent() == null || pE.getContent().size() == 0) {
-      indent = true;
-    } else {
-      List content = pE.getContent();
-      Content c = (Content) content.get(content.size() - 1);
-      if (c instanceof Element) {
-        Element e = (Element) c;
-        if (INDENT_TAGS.contains(e.getName())) {
-          indent = true;
-        }
-      }
-    }
-    if (indent && formatLevel != FormatLevel.RAW) {
-      pE.addContent(Translations.CHINESE_INDENT);
-    }
     Matcher m = SENTENCE_PATTERN_3.matcher(sentence);
-
     int start = 0;
     while (m.find()) {
       // replace white space with &nbsp;

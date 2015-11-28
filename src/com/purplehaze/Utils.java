@@ -2,10 +2,11 @@ package com.purplehaze;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
@@ -24,6 +25,7 @@ public class Utils {
   private static final Pattern htmlTagPattern = Pattern.compile("</?[a-zA-Z][^>]*>");
   private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
   public static final String DEFAULT_CHARSET = "UTF-8";
+  private static XMLOutputter xmlOutputter = new XMLOutputter(Format.getCompactFormat());
 
   public static String formatInteger(int value, int digit) {
     NumberFormat nf = NumberFormat.getNumberInstance();
@@ -150,6 +152,10 @@ public class Utils {
     if (alt != null) {
       imgE.setAttribute("alt", alt);
     }
+  }
+
+  public static String getChildrenTextTrim(Element parent) {
+    return stripHtmlTags(xmlOutputter.outputString(parent));
   }
 
   public static String stripHtmlTags(String string) {

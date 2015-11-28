@@ -233,7 +233,7 @@ public abstract class AbstractArticleManager {
     Element head = html.getChild("head", ns);
     String style = adr.getStyle();
     if (style != null) {
-      head.addContent(new Element("style", ns).setText(adr.getStyle()));
+      head.addContent(new Element("style", ns).addContent(new Comment(adr.getStyle())));
     }
   }
 

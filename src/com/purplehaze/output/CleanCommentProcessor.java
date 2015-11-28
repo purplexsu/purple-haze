@@ -16,6 +16,7 @@ public class CleanCommentProcessor extends HtmlPostProcessor {
 
   static {
     WHITELISTED_ELEMENT_NAMES.add("script");
+    WHITELISTED_ELEMENT_NAMES.add("style");
   }
 
   @Override
