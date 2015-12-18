@@ -326,7 +326,7 @@ public abstract class AbstractDivisionManager {
       Utils.setMenuFocus(doc, context.getDivision());
       final PhotoIndexAggregator pia = siteContent.getPhotoAggregator();
       int snippetCount = pia.size();
-      List<DivisionPageInfo> schema = DivisionPageInfo.getSchema(snippetCount, 30, 10, 5, "index");
+      List<DivisionPageInfo> schema = DivisionPageInfo.getSchema(snippetCount, 30, 12, 6, "index");
       for (DivisionPageInfo dpi : schema) {
         updateDivisionOnePage(pia, doc, dpi);
       }
