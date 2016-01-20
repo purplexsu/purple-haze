@@ -416,6 +416,12 @@ public abstract class AbstractArticleManager {
 
     @Override
     protected void writeToArticle(Document doc, Element pageE, int pageIndex, int totalPageCount) throws IOException, JDOMException {
+      // Do not show ads in music articles because of copy right restriction of Adsense.
+      Element ads = findElement(doc, "div", "class", "h_ads");
+      ads.detach();
+      ads = findElement(doc, "div", "class", "v_ads");
+      ads.detach();
+
       Namespace ns = doc.getRootElement().getNamespace();
       Element pE = new Element("p", ns);
       pageE.addContent(pE);
