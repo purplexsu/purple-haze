@@ -318,7 +318,10 @@ class ArticleContentParser {
     int start = 0;
     while (m.find()) {
       Element passageE = new Element("span", ns);
-      paragraphE.addContent(passageE).addContent(new Element("br", ns));
+      paragraphE.addContent(passageE);
+      if (formatLevel != FormatLevel.FULL) {
+        paragraphE.addContent(new Element("br", ns));
+      }
       handleOnePassage(passageE, paragraph.substring(start, m.start()), ns, formatLevel);
       start = m.end();
     }

@@ -134,13 +134,13 @@ public class ArticleContentParserTest extends TestCase {
         "<h1>回来喽</h1>" +
         "<p class=\"timestamp\">(2006-2-13 15:36:57)</p>" +
         "<p class=\"article_text\">" +
-        "<span>第<b>一</b>段</span><br />" +
+        "<span>第<b>一</b>段</span>" +
         "<span>换行" +
-        "<a href=\"../travel/article-001.html\">段尾站内链接</a></span><br />" +
+        "<a href=\"../travel/article-001.html\">段尾站内链接</a></span>" +
         "<span><span class=\"capital\">首</span>字母加大</span>" +
         "</p>" +
         "<p class=\"article_text\">" +
-        "<span><b>第</b>二段</span><br />" +
+        "<span><b>第</b>二段</span>" +
         "<span>换行" +
         "<a rel=\"external\" href=\"http://example.com\">站外链接</a></span>" +
         "</p>" +
