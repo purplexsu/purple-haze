@@ -82,7 +82,6 @@ public class CommonArticleGenerator implements Runnable {
         at.zip();
         at.upload();
         at.extract();
-        at.ping();
       }
     } catch (Exception e) {
       e.printStackTrace();

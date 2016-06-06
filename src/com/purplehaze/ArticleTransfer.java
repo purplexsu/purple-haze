@@ -169,10 +169,6 @@ public class ArticleTransfer {
     callServer("http://www.purplexsu.net/cmdcmd/cmdcmd.php?cmdcmd=2");
   }
 
-  public void ping() throws IOException {
-    callServer("http://www.purplexsu.net/cmdcmd/ping.php");
-  }
-
   private void callServer(String url) throws IOException {
     final GetMethod method = new GetMethod(url);
     prepareHttpMethod(method);
