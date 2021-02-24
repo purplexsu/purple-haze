@@ -2,8 +2,8 @@
 # Author: purplexsu
 
 function call_java() {
-  project_dir="${HOME}/Projects/PurpleHaze"
-  web_dir="${HOME}/Google Drive/My Webs"
+  project_dir="${HOME}/Project"
+  web_dir="${HOME}/Drive/My Webs"
   lib=(ArticleGenerator.jar\
        Lib/jdom.jar\
        Lib/xercesImpl.jar\
