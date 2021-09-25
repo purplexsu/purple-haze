@@ -422,16 +422,18 @@ public abstract class AbstractArticleManager {
       ads = findElement(doc, "div", "class", "v_ads");
       ads.detach();
 
-      Namespace ns = doc.getRootElement().getNamespace();
-      Element pE = new Element("p", ns);
-      pageE.addContent(pE);
       ArticleDataReader adr = siteContent.getArticleAggregator(context)
           .getCurrentWorkingReader();
-      pE.addContent(CHINESE_INDENT)
-          .addContent(new Element("b", ns).setText(TRY_ONE_SONG_COLON))
-          .addContent(new Element("a", ns)
-              .setAttribute("href", MP3_URL_PREFIX + adr.getArticleId() + ".mp3")
-              .setText(adr.getOptional()));
+      if (adr.getOptional() != null) {
+        Namespace ns = doc.getRootElement().getNamespace();
+        Element pE = new Element("p", ns);
+        pageE.addContent(pE);
+        pE.addContent(CHINESE_INDENT)
+            .addContent(new Element("b", ns).setText(TRY_ONE_SONG_COLON))
+            .addContent(new Element("a", ns)
+                .setAttribute("href", MP3_URL_PREFIX + adr.getArticleId() + ".mp3")
+                .setText(adr.getOptional()));
+      }
       super.writeToArticle(doc, pageE, pageIndex, totalPageCount);
     }
   }
