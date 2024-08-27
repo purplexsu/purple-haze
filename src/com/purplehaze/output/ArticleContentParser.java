@@ -281,7 +281,7 @@ class ArticleContentParser {
             pageE.addContent(new Element("p", ns).setAttribute("class", "article_photo")
                 .addContent(new Element("iframe", ns)
                         .setAttribute("src",
-                            "http://player.youku.com/embed/" + id)
+                            "https://player.youku.com/embed/" + id)
                         .setAttribute("allowFullScreen", "true")
                         .setAttribute("frameborder", "0")
                         .setAttribute("width", width)
