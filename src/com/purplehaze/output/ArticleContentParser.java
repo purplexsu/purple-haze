@@ -232,7 +232,7 @@ class ArticleContentParser {
           link = "../" + Division.PHOTO + "/" + album + "/" + data + ".html";
           src = "../" + Division.PHOTO + "/" + album + "/" + data + ".jpg";
           PhotoIndexReader pir = pia.getReader(album);
-          alt = pir.getTags().get(Integer.parseInt(data) - 1).replace('/', ' ');
+          alt = pir.getMedia(Integer.parseInt(data) - 1).getTags().replace('/', ' ');
 
           if (formatLevel == FormatLevel.FULL) {
             File imgFile = new File(context.getDivisionPath(), src);

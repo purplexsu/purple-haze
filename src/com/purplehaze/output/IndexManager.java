@@ -121,7 +121,7 @@ public class IndexManager {
 
   private void writeOneAlbumSnippet(Element divE, Namespace ns, PhotoIndexAggregator pia, int albumId) {
     PhotoIndexReader pir = pia.getReader(albumId);
-    PhotoSnippet ps = new PhotoSnippet("photo/" + pir.getAlbumId(), pir.getTitle(), pir.getTags().size());
+    PhotoSnippet ps = new PhotoSnippet("photo/" + pir.getAlbumId(), pir.getTitle(), pir.getNumOfMedias());
     ps.write(divE, ns);
   }
 }

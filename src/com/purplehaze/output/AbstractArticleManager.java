@@ -467,9 +467,9 @@ public abstract class AbstractArticleManager {
       Document _sample = context.getFileManager().nonValidatedBuild(context.getArticleTemplateFile());
       albumPath = new File(context.getDivisionPath(), pir.getAlbumId());
       File[] photos = albumPath.listFiles(new FileNameFilter("\\d{2}\\.jpg", false));
-      if (photos.length != pir.getTags().size()) {
+      if (photos.length != pir.getNumOfMedias()) {
         throw new IOException("Photo number and tag number don't match! Tags:"
-            + pir.getTags().size() + " & photos:" + photos.length);
+            + pir.getNumOfMedias() + " & photos:" + photos.length);
       }
       Arrays.sort(photos);
       writeIndexPage(_sample);
@@ -553,7 +553,7 @@ public abstract class AbstractArticleManager {
         imgE.setAttribute("src", photoName);
         imgE.setAttribute("height", String.valueOf(img.getIconHeight()));
         imgE.setAttribute("width", String.valueOf(img.getIconWidth()));
-        String alt = pir.getTags().get(i).replace("/", " ");
+        String alt = pir.getMedia(i).getTags().replace("/", " ");
         imgE.setAttribute("alt", alt);
         imgE.setAttribute("title", alt);
         if (!Utils.isEmptyString(pir.getAssociatedArticleLink())) {
@@ -617,11 +617,11 @@ public abstract class AbstractArticleManager {
             .addContent(new Text(COLON));
         captionDivE.addContent(new Element("a", ns)
             .setAttribute("href", photoName)
-            .setText(pir.getTags().get(i).replace("/", " ")));
+            .setText(pir.getMedia(i).getTags().replace("/", " ")));
         captionDivE.addContent(nextLink);
         captionDivE.addContent(new Comment("InstanceEndEditable"));
 
-        String meta = pir.getTags().get(i) + "/" + Division.PHOTO.getChinese();
+        String meta = pir.getMedia(i).getTags() + "/" + Division.PHOTO.getChinese();
         String keywords = meta.replace("/", ",");
         Utils.findElement(doc, "meta", "name", "keywords").setAttribute("content", keywords);
         StringBuilder description = new StringBuilder(meta.replace("/", ""))

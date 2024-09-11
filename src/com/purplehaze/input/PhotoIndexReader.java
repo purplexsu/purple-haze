@@ -50,8 +50,12 @@ public class PhotoIndexReader {
     return Boolean.parseBoolean(meta.getProperty("skipindex", "false"));
   }
 
-  public List<String> getTags() {
-    return tags;
+  public int getNumOfMedias() {
+    return tags.size();
+  }
+
+  public Media getMedia(int index) {
+    return new Media(tags.get(index));
   }
 
   public String getAlbumId() {
@@ -74,3 +78,4 @@ public class PhotoIndexReader {
     this.associatedArticleLink = associatedArticleLink;
   }
 }
+

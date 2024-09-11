@@ -345,7 +345,7 @@ public abstract class AbstractDivisionManager {
         if (currentPir.isIndexSkipped()) {
           continue;
         }
-        int photoCount = currentPir.getTags().size();
+        int photoCount = currentPir.getNumOfMedias();
         String subDirName = Utils.formatInteger(current, 3);
         PhotoSnippet ps = new PhotoSnippet(subDirName, currentPir.getTitle(), photoCount);
         ps.write(divE, ns);

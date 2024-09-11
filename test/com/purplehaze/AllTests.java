@@ -1,6 +1,7 @@
 package com.purplehaze;
 
 import com.purplehaze.input.ArticleDataAggregatorTest;
+import com.purplehaze.input.PhotoIndexReaderTest;
 import com.purplehaze.output.ArticleContentParserTest;
 import com.purplehaze.output.CleanCommentProcessorTest;
 import com.purplehaze.output.DivisionPageInfoTest;
@@ -20,7 +21,8 @@ public class AllTests {
       ArticleDataAggregatorTest.class,
       CleanCommentProcessorTest.class,
       ContextTest.class,
-      DivisionPageInfoTest.class
+      DivisionPageInfoTest.class,
+      PhotoIndexReaderTest.class
   };
 
   public static void main(String[] args) {
