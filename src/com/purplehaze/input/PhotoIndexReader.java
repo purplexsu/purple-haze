@@ -2,8 +2,13 @@ package com.purplehaze.input;
 
 import com.purplehaze.Utils;
 
-import java.io.*;
-import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,14 +19,14 @@ public class PhotoIndexReader {
 
   private File dataFile;
   private Properties meta;
-  private List<String> tags;
+  private List<Media> medias;
   private String associatedArticleTitle;
   private String associatedArticleLink;
 
   PhotoIndexReader(File dataFile) {
     this.dataFile = dataFile;
     meta = new Properties();
-    tags = new LinkedList<String>();
+    medias = new ArrayList<>();
   }
 
   void read() throws IOException {
@@ -37,7 +42,7 @@ public class PhotoIndexReader {
     }
     meta.load(new StringReader(sb.toString()));
     while ((line = br.readLine()) != null) {
-      tags.add(line.trim());
+      medias.add(new Media(line.trim()));
     }
     br.close();
   }
@@ -51,11 +56,11 @@ public class PhotoIndexReader {
   }
 
   public int getNumOfMedias() {
-    return tags.size();
+    return medias.size();
   }
 
   public Media getMedia(int index) {
-    return new Media(tags.get(index));
+    return medias.get(index);
   }
 
   public String getAlbumId() {
