@@ -5,6 +5,7 @@ import com.purplehaze.Division;
 import com.purplehaze.Utils;
 import com.purplehaze.input.ArticleDataAggregator;
 import com.purplehaze.input.ArticleDataReader;
+import com.purplehaze.input.Media;
 import com.purplehaze.input.PhotoIndexAggregator;
 import com.purplehaze.input.PhotoIndexReader;
 import com.purplehaze.input.SiteContent;
@@ -152,119 +153,9 @@ class ArticleContentParser {
       String type = m.group(1);
       String data = m.group(2);
       if ("t2".equalsIgnoreCase(type) || "t3".equalsIgnoreCase(type)) {
-        String fullTitle, shortTitle;
-        if (data.contains("|")) {
-          String[] titles = data.split("\\|", 2);
-          fullTitle = titles[0];
-          shortTitle = titles[1];
-        } else {
-          fullTitle = data;
-          shortTitle = data;
-        }
-        if ("t2".equalsIgnoreCase(type)) {
-          //{@t2{����(2003.4.21)}@}
-          switch (formatLevel) {
-            case FULL: {
-              pageE.addContent(new Element("h3", ns)
-                  .setAttribute("id", Utils.getAnchorId(fullTitle))
-                  .setText(fullTitle));
-              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
-                  pageIndex);
-              break;
-            }
-            case SNIPPET: {
-              pageE.addContent(fullTitle).addContent(new Element("br", ns));
-              break;
-            }
-            case RAW: {
-              pageE.addContent("(" + fullTitle + ")");
-              break;
-            }
-          }
-        } else if ("t3".equalsIgnoreCase(type)) {
-          //{@t3{����(2003.4.21)}@}
-          switch (formatLevel) {
-            case FULL: {
-              pageE.addContent(new Element("h4", ns)
-                  .setAttribute("id", Utils.getAnchorId(fullTitle))
-                  .setText(fullTitle));
-              articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
-                  pageIndex);
-              break;
-            }
-            case SNIPPET: {
-              pageE.addContent(fullTitle).addContent(new Element("br", ns));
-              break;
-            }
-            case RAW: {
-              pageE.addContent("(" + fullTitle + ")");
-              break;
-            }
-          }
-        }
+        handleTitleTag(articleIndex, pageE, pageIndex, formatLevel, ns, type, data);
       } else if ("img".equalsIgnoreCase(type)) {
-        String alt = null;
-        String src;
-        String link = null;
-        Element pE = new Element("p", ns).setAttribute("class", "article_photo");
-        Element imgE = new Element("img", ns);
-        if (data.startsWith("http")) {
-          //{@img{http://www.google.cn/pic.jpg}@}
-          src = data;
-          if (formatLevel == FormatLevel.FULL) {
-            pE.addContent(imgE);
-          }
-        } else if (data.startsWith("/")) {
-          //{@img{/2pigs.gif}@}
-          src = "../images" + data;
-          if (formatLevel == FormatLevel.FULL) {
-            File imgFile = new File(context.getDivisionPath(), src);
-            Utils.fillImgTag(imgFile, imgE, null);
-            pE.addContent(imgE);
-          }
-        } else {
-          //{@img{01}@} or {@img{001-01}@}
-          String album = ada.getCurrentWorkingReader().getPhoto();
-          if (album == null || data.contains("-")) {
-            album = data.split("-")[0];
-            data = data.split("-")[1];
-          }
-          link = "../" + Division.PHOTO + "/" + album + "/" + data + ".html";
-          src = "../" + Division.PHOTO + "/" + album + "/" + data + ".jpg";
-          PhotoIndexReader pir = pia.getReader(album);
-          alt = pir.getMedia(Integer.parseInt(data) - 1).getTags().replace('/', ' ');
-
-          if (formatLevel == FormatLevel.FULL) {
-            File imgFile = new File(context.getDivisionPath(), src);
-            Utils.fillImgTag(imgFile, imgE, alt);
-            imgE.setAttribute("id", Utils.getAnchorId(album, data));
-            Element aE = new Element("a", ns)
-                .setAttribute("href", link)
-                .setAttribute("rel", "external");
-            pE.addContent(aE.addContent(imgE));
-          }
-        }
-        switch (formatLevel) {
-          case FULL: {
-            imgE.setAttribute("src", src);
-            pageE.addContent(pE);
-            break;
-          }
-          case SNIPPET: {
-            if (alt == null) {
-              pageE.addContent("<" + Division.PHOTO.getChinese() + ">")
-                  .addContent(new Element("br", ns));
-            } else {
-              pageE.addContent("<")
-                  .addContent(new Element("a", ns)
-                      .setAttribute("href", link)
-                      .setText(alt))
-                  .addContent(">")
-                  .addContent(new Element("br", ns));
-            }
-            break;
-          }
-        }
+        handleMediaTag(pageE, formatLevel, ns, data);
       } else if ("youku".equalsIgnoreCase(type)) {
         //{@youku{kadfh}@}
         String id = data;
@@ -301,6 +192,132 @@ class ArticleContentParser {
                 .addContent(new Element("br", ns));
             break;
           }
+        }
+      }
+    }
+  }
+
+  private void handleMediaTag(Element pageE, FormatLevel formatLevel, Namespace ns, String data) throws IOException {
+    String alt = null;
+    String link = null;
+    Element pE = new Element("p", ns).setAttribute("class", "article_photo");
+
+    if (data.startsWith("http")) {
+      //{@img{http://www.google.cn/pic.jpg}@}
+      if (formatLevel == FormatLevel.FULL) {
+        Element imgE = new Element("img", ns);
+        imgE.setAttribute("src", data);
+        pE.addContent(imgE);
+      }
+    } else if (data.startsWith("/")) {
+      //{@img{/2pigs.gif}@}
+      String src = "../images" + data;
+      if (formatLevel == FormatLevel.FULL) {
+        File imgFile = new File(context.getDivisionPath(), src);
+        Element imgE = new Element("img", ns);
+        Utils.fillImgTag(imgFile, imgE, null);
+        imgE.setAttribute("src", src);
+        pE.addContent(imgE);
+      }
+    } else {
+      //{@img{01}@} or {@img{001-01}@}
+      String album = ada.getCurrentWorkingReader().getPhoto();
+      if (album == null || data.contains("-")) {
+        album = data.split("-")[0];
+        data = data.split("-")[1];
+      }
+      link = "../" + Division.PHOTO + "/" + album + "/" + data + ".html";
+      PhotoIndexReader pir = pia.getReader(album);
+      Media media = pir.getMedia(Integer.parseInt(data) - 1);
+      alt = media.getTags().replace('/', ' ');
+      handleAlbumMediaTag(pE, formatLevel, ns, data, alt, link, album);
+    }
+    switch (formatLevel) {
+      case FULL: {
+        pageE.addContent(pE);
+        break;
+      }
+      case SNIPPET: {
+        if (alt == null) {
+          pageE.addContent("<" + Division.PHOTO.getChinese() + ">")
+              .addContent(new Element("br", ns));
+        } else {
+          pageE.addContent("<")
+              .addContent(new Element("a", ns)
+                  .setAttribute("href", link)
+                  .setText(alt))
+              .addContent(">")
+              .addContent(new Element("br", ns));
+        }
+        break;
+      }
+    }
+  }
+
+  private void handleAlbumMediaTag(Element pE, FormatLevel formatLevel, Namespace ns, String data, String alt, String link, String album) throws IOException {
+    String src = "../" + Division.PHOTO + "/" + album + "/" + data + ".jpg";
+    if (formatLevel != FormatLevel.FULL) {
+      return;
+    }
+    File imgFile = new File(context.getDivisionPath(), src);
+    Element imgE = new Element("img", ns);
+    Utils.fillImgTag(imgFile, imgE, alt);
+    imgE.setAttribute("id", Utils.getAnchorId(album, data));
+    imgE.setAttribute("src", src);
+    Element aE = new Element("a", ns)
+        .setAttribute("href", link)
+        .setAttribute("rel", "external");
+    pE.addContent(aE.addContent(imgE));
+  }
+
+  private void handleTitleTag(ArticleIndex articleIndex, Element pageE, int pageIndex, FormatLevel formatLevel, Namespace ns, String type, String data) {
+    String fullTitle, shortTitle;
+    if (data.contains("|")) {
+      String[] titles = data.split("\\|", 2);
+      fullTitle = titles[0];
+      shortTitle = titles[1];
+    } else {
+      fullTitle = data;
+      shortTitle = data;
+    }
+    if ("t2".equalsIgnoreCase(type)) {
+      //{@t2{����(2003.4.21)}@}
+      switch (formatLevel) {
+        case FULL: {
+          pageE.addContent(new Element("h3", ns)
+              .setAttribute("id", Utils.getAnchorId(fullTitle))
+              .setText(fullTitle));
+          articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
+              pageIndex);
+          break;
+        }
+        case SNIPPET: {
+          pageE.addContent(fullTitle).addContent(new Element("br", ns));
+          break;
+        }
+        case RAW: {
+          pageE.addContent("(" + fullTitle + ")");
+          break;
+        }
+      }
+    } else if ("t3".equalsIgnoreCase(type)) {
+      //{@t3{����(2003.4.21)}@}
+      switch (formatLevel) {
+        case FULL: {
+          pageE.addContent(new Element("h4", ns)
+              .setAttribute("id", Utils.getAnchorId(fullTitle))
+              .setText(fullTitle));
+          articleIndex.addItem(ada.getCurrentWorkingArticleId(), fullTitle, shortTitle, type,
+              pageIndex);
+          break;
+        }
+        case SNIPPET: {
+          pageE.addContent(fullTitle).addContent(new Element("br", ns));
+          break;
+        }
+        case RAW: {
+          pageE.addContent("(" + fullTitle + ")");
+          break;
         }
       }
     }
