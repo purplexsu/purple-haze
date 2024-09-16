@@ -230,7 +230,7 @@ class ArticleContentParser {
       PhotoIndexReader pir = pia.getReader(album);
       Media media = pir.getMedia(Integer.parseInt(data) - 1);
       alt = media.getTags().replace('/', ' ');
-      handleAlbumMediaTag(pE, formatLevel, ns, data, alt, link, album);
+      handleAlbumMediaTag(pE, formatLevel, ns, media , data, alt, link, album);
     }
     switch (formatLevel) {
       case FULL: {
@@ -254,20 +254,29 @@ class ArticleContentParser {
     }
   }
 
-  private void handleAlbumMediaTag(Element pE, FormatLevel formatLevel, Namespace ns, String data, String alt, String link, String album) throws IOException {
-    String src = "../" + Division.PHOTO + "/" + album + "/" + data + ".jpg";
+  private void handleAlbumMediaTag(Element pE, FormatLevel formatLevel, Namespace ns, Media media, String data, String alt, String link, String album) throws IOException {
     if (formatLevel != FormatLevel.FULL) {
       return;
     }
-    File imgFile = new File(context.getDivisionPath(), src);
-    Element imgE = new Element("img", ns);
-    Utils.fillImgTag(imgFile, imgE, alt);
-    imgE.setAttribute("id", Utils.getAnchorId(album, data));
-    imgE.setAttribute("src", src);
-    Element aE = new Element("a", ns)
-        .setAttribute("href", link)
-        .setAttribute("rel", "external");
-    pE.addContent(aE.addContent(imgE));
+    String srcWithoutExtension = "../" + Division.PHOTO + "/" + album + "/" + data;
+    switch (media.getType()) {
+      case PHOTO:
+        String src = srcWithoutExtension + ".jpg";
+        File imgFile = new File(context.getDivisionPath(), src);
+        Element imgE = new Element("img", ns);
+        Utils.fillImgTag(imgFile, imgE, alt);
+        imgE.setAttribute("id", Utils.getAnchorId(album, data));
+        imgE.setAttribute("src", src);
+        Element aE = new Element("a", ns)
+            .setAttribute("href", link)
+            .setAttribute("rel", "external");
+        pE.addContent(aE.addContent(imgE));
+        return;
+      case MP4:
+      case MOV:
+        Element videoE = Utils.fillVideoTag(ns, media, data, album, srcWithoutExtension);
+        pE.addContent(videoE);
+    }
   }
 
   private void handleTitleTag(ArticleIndex articleIndex, Element pageE, int pageIndex, FormatLevel formatLevel, Namespace ns, String type, String data) {

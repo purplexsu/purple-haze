@@ -7,7 +7,7 @@ public class Media {
   private int height;
   private final String tags;
 
-  enum Type {
+  public enum Type {
     PHOTO,
     MOV,
     MP4

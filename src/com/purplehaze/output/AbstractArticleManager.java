@@ -6,9 +6,11 @@ import com.purplehaze.FileNameFilter;
 import com.purplehaze.Utils;
 import com.purplehaze.input.ArticleDataAggregator;
 import com.purplehaze.input.ArticleDataReader;
+import com.purplehaze.input.Media;
 import com.purplehaze.input.PhotoIndexAggregator;
 import com.purplehaze.input.PhotoIndexReader;
 import com.purplehaze.input.SiteContent;
+import com.sun.source.doctree.ValueTree;
 import org.jdom.Comment;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -35,6 +37,7 @@ import static com.purplehaze.output.Translations.*;
  * Output manager for all article files.
  */
 public abstract class AbstractArticleManager {
+
   protected final SiteContent siteContent;
   protected final Context context;
 
@@ -466,7 +469,7 @@ public abstract class AbstractArticleManager {
           .getCurrentWorkingAlbumReader();
       Document _sample = context.getFileManager().nonValidatedBuild(context.getArticleTemplateFile());
       albumPath = new File(context.getDivisionPath(), pir.getAlbumId());
-      File[] photos = albumPath.listFiles(new FileNameFilter("\\d{2}\\.jpg", false));
+      File[] photos = albumPath.listFiles(new FileNameFilter("\\d{2}\\.(jpg|mp4|mov)", false));
       if (photos.length != pir.getNumOfMedias()) {
         throw new IOException("Photo number and tag number don't match! Tags:"
             + pir.getNumOfMedias() + " & photos:" + photos.length);
@@ -530,37 +533,48 @@ public abstract class AbstractArticleManager {
 
     }
 
+    private void replace(Element oldE, Element newE) {
+      Element father = oldE.getParentElement();
+      int index = oldE.getParent().indexOf(oldE);
+      father.setContent(index, newE);
+    }
+
     private void insertParent(Element child, Element newParent) {
-      Element father = child.getParentElement();
-      int index = child.getParent().indexOf(child);
-      father.setContent(index, newParent);
+      replace(child, newParent);
       newParent.setContent(child);
     }
 
-    private void writeArticle(File[] photos, Document _sample, PhotoIndexReader pir) throws IOException {
+    private void writeArticle(File[] mediaFiles, Document _sample, PhotoIndexReader pir) throws IOException {
       NumberFormat nf = NumberFormat.getNumberInstance();
       nf.setMaximumIntegerDigits(2);
       nf.setMinimumIntegerDigits(2);
       nf.setGroupingUsed(false);
-      for (int i = 0; i < photos.length; i++) {
-        File photo = photos[i];
+      for (int i = 0; i < mediaFiles.length; i++) {
+        File mediaFile = mediaFiles[i];
         Document doc = (Document) _sample.clone();
         Namespace ns = doc.getRootElement().getNamespace();
 
         Element imgE = findElement(doc, "img", "PhotoArea");
-        ImageIcon img = new ImageIcon(photo.getCanonicalPath());
-        String photoName = photo.getName();
-        imgE.setAttribute("src", photoName);
-        imgE.setAttribute("height", String.valueOf(img.getIconHeight()));
-        imgE.setAttribute("width", String.valueOf(img.getIconWidth()));
-        String alt = pir.getMedia(i).getTags().replace("/", " ");
-        imgE.setAttribute("alt", alt);
-        imgE.setAttribute("title", alt);
-        if (!Utils.isEmptyString(pir.getAssociatedArticleLink())) {
-          Element aE = new Element("a", ns)
-              .setAttribute("href", pir.getAssociatedArticleLink())
-              .setAttribute("id", "PhotoLink");
-          insertParent(imgE, aE);
+        Media media = pir.getMedia(i);
+        int currentSequence = i + 1;
+        String currentSequenceString = String.valueOf(currentSequence);
+        switch (media.getType()) {
+          case PHOTO:
+            String alt = media.getTags().replace("/", " ");
+            Utils.fillImgTag(mediaFile.getName(), mediaFile, imgE, alt);
+            if (!Utils.isEmptyString(pir.getAssociatedArticleLink())) {
+              Element aE = new Element("a", ns)
+                  .setAttribute("href", pir.getAssociatedArticleLink())
+                  .setAttribute("id", "PhotoLink");
+              insertParent(imgE, aE);
+            }
+            break;
+          case MOV:
+          case MP4:
+            Element videoE = Utils.fillVideoTag(
+                ns, media, currentSequenceString, pir.getAlbumId(), currentSequenceString);
+            replace(imgE, videoE);
+            break;
         }
 
         Element titleE = doc.getRootElement()
@@ -571,17 +585,16 @@ public abstract class AbstractArticleManager {
             .append(" - ")
             .append(pir.getTitle())
             .append(" - ")
-            .append(i + 1)
+            .append(currentSequenceString)
             .append(" (Purplexsu's Space)")
             .toString());
 
-        int currentSequence = Integer.parseInt(photoName.substring(0, 2));
         int previousSequence = currentSequence - 1;
         int nextSequence = currentSequence + 1;
         if (currentSequence == 1) {
-          previousSequence = photos.length;
+          previousSequence = mediaFiles.length;
         }
-        if (currentSequence == photos.length) {
+        if (currentSequence == mediaFiles.length) {
           nextSequence = 1;
         }
         Element previousLink = new Element("a", ns)
@@ -616,12 +629,12 @@ public abstract class AbstractArticleManager {
             .addContent(new Element("a", ns).setAttribute("href", "index.html").setText(pir.getTitle()))
             .addContent(new Text(COLON));
         captionDivE.addContent(new Element("a", ns)
-            .setAttribute("href", photoName)
-            .setText(pir.getMedia(i).getTags().replace("/", " ")));
+            .setAttribute("href", mediaFile.getName())
+            .setText(media.getTags().replace("/", " ")));
         captionDivE.addContent(nextLink);
         captionDivE.addContent(new Comment("InstanceEndEditable"));
 
-        String meta = pir.getMedia(i).getTags() + "/" + Division.PHOTO.getChinese();
+        String meta = media.getTags() + "/" + Division.PHOTO.getChinese();
         String keywords = meta.replace("/", ",");
         Utils.findElement(doc, "meta", "name", "keywords").setAttribute("content", keywords);
         StringBuilder description = new StringBuilder(meta.replace("/", ""))
@@ -636,7 +649,7 @@ public abstract class AbstractArticleManager {
         }
         Utils.findElement(doc, "meta", "name", "description").setAttribute("content", description.toString());
 
-        String html = photoName.replace("jpg", "html");
+        String html = String.format("%2d.html", currentSequence);
         context.getFileManager().xmlOutput(doc, new File(albumPath, html));
         System.out.print('#');
       }

@@ -3,6 +3,12 @@ tags=老版保留贴
 time=2006-2-14 10\:07\:58
 title=终于搞定了新疆的游记
 columns=xinjiang,nemenggu
+photo=007
 
 http://cloud.withu.com/purplexsu/013
-今天很有意义哦
+Test media tags: images
+{@img{02}@}
+MP4
+{@img{01}@}
+MOV
+{@img{03}@}

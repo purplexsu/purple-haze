@@ -1,7 +1,9 @@
 package com.purplehaze;
 
+import com.purplehaze.input.Media;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -152,6 +154,16 @@ public class Utils {
     if (alt != null) {
       imgE.setAttribute("alt", alt);
     }
+  }
+
+  public static Element fillVideoTag(Namespace ns, Media media, String data, String album, String srcWithoutExtension) {
+    Element videoE = new Element("video", ns);
+    videoE.setAttribute("id", getAnchorId(album, data))
+        .setAttribute("src", srcWithoutExtension + "." + media.getType().toString().toLowerCase())
+        .setAttribute("width", String.valueOf(media.getWidth()))
+        .setAttribute("height", String.valueOf(media.getHeight()))
+        .setAttribute("controls", "controls");
+    return videoE;
   }
 
   public static String getChildrenTextTrim(Element parent) {

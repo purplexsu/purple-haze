@@ -176,4 +176,27 @@ public class ArticleContentParserTest extends TestCase {
     String expected = "<html>第一段换行段尾站内链接首字母加大第二段换行站外链接</html>";
     assertEquals(expected, sw.toString());
   }
+
+  public void testGetFormattedPages_albumMediaTags_full() throws IOException, ClassNotFoundException {
+    List<Element> pages = acp.getFormattedPages("003", FormatLevel.FULL, null);
+    XMLOutputter output = new XMLOutputter(Format.getCompactFormat());
+    StringWriter sw = new StringWriter();
+    assertEquals(1, pages.size());
+    output.output(pages.get(0), sw);
+    String expected = "<html><h1>终于搞定了新疆的游记</h1>" +
+        "<p class=\"timestamp\">(2006-2-14 10:07:58)</p>" +
+        "<p class=\"article_text\"><span>http://cloud.withu.com/purplexsu/013</span>" +
+        "<span>Test media tags: images</span></p>" +
+        "<p class=\"article_photo\"><a href=\"../photo/007/02.html\" rel=\"external\">" +
+        "<img src=\"../photo/007/02.jpg\" alt=\"塘沽外滩\" id=\"i00702\" /></a></p>" +
+        "<p class=\"article_text\"><span>MP4</span></p>" +
+        "<p class=\"article_photo\"><video id=\"i00701\" src=\"../photo/007/01.mp4\" width=\"760\" height=\"480\" " +
+        "controls=\"controls\" /></p>" +
+        "<p class=\"article_text\"><span>MOV</span></p>" +
+        "<p class=\"article_photo\"><video id=\"i00703\" src=\"../photo/007/03.mov\" width=\"640\" height=\"480\" " +
+        "controls=\"controls\" /></p>" +
+        "</html>";
+    assertEquals(expected, sw.toString());
+  }
+
 }
