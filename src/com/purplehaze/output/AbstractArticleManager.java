@@ -649,7 +649,7 @@ public abstract class AbstractArticleManager {
         }
         Utils.findElement(doc, "meta", "name", "description").setAttribute("content", description.toString());
 
-        String html = String.format("%2d.html", currentSequence);
+        String html = nf.format(currentSequence) + ".html";
         context.getFileManager().xmlOutput(doc, new File(albumPath, html));
         System.out.print('#');
       }
