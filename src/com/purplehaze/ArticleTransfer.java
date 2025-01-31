@@ -1,28 +1,33 @@
 package com.purplehaze;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
@@ -39,22 +44,19 @@ public class ArticleTransfer {
   private final Set<File> files;
   private final File zipFile;
   private final Properties credentials = new Properties();
-  private final HttpClient httpClient = new HttpClient();
+  private final CloseableHttpClient httpclient;
   private final FTPClient ftpClient = new FTPClient();
 
   public ArticleTransfer(File hazePath) throws IOException {
     this.hazePath = hazePath;
-    this.files = new HashSet<File>();
+    this.files = new HashSet();
     zipFile = new File(hazePath, "update.zip");
-    final FileInputStream fis = new FileInputStream(
-        new File(System.getProperty("user.home"), ".purple-haze"));
+    final FileInputStream fis = new FileInputStream(new File(System.getProperty("user.home"), ".purple-haze"));
     credentials.load(fis);
     fis.close();
-    httpClient.getState().setCredentials(
-        new AuthScope("www.purplexsu.net", 80),
-        new UsernamePasswordCredentials(
-            credentials.getProperty("http.username"),
-            credentials.getProperty("http.password")));
+    BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+    credsProvider.setCredentials(new AuthScope(new HttpHost("https", "www.purplexsu.net")), new UsernamePasswordCredentials(credentials.getProperty("http.username"), credentials.getProperty("http.password").toCharArray()));
+    httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
   }
 
   public void clearFiles() {
@@ -116,34 +118,26 @@ public class ArticleTransfer {
   }
 
   private void http() throws IOException {
-    final PostMethod method = new PostMethod("http://www.purplexsu.net/cmdcmd/cmdcmd.php?cmdcmd=3");
-    prepareHttpMethod(method);
+    // Create multipart entity
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+    builder.addPart("MyFile", new FileBody(zipFile));
+    HttpEntity multipartEntity = builder.build();
+    HttpPost httpPost = new HttpPost("https://www.purplexsu.net/cmdcmd/cmdcmd.php?cmdcmd=3");
+    httpPost.setEntity(multipartEntity);
+    prepareHttpMethod(httpPost);
 
-    try {
-      Part[] parts = {new FilePart("MyFile", zipFile)};
-      MultipartRequestEntity mime = new MultipartRequestEntity(parts, method.getParams());
-      method.setRequestEntity(mime);
-
-      // Execute the method.
-      int statusCode = httpClient.executeMethod(method);
-      if (statusCode != HttpStatus.SC_OK) {
-        System.err.println("Method failed: " + method.getStatusLine());
+    // Execute the method.
+    try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+      HttpEntity entity = response.getEntity();
+      if (response.getCode() != HttpStatus.SC_OK) {
+        System.err.println("Method failed: " + response.getCode() + " " + response.getReasonPhrase());
       }
-
-      // Read the response body.
-      final BufferedReader br = new BufferedReader(
-          new InputStreamReader(method.getResponseBodyAsStream()));
-
-      // Deal with the response.
-      // Use caution: ensure correct character encoding and is not binary data
-      String response = br.readLine();
-      if (!Utils.equals("10", response)) {
-        throw new IOException("Upload fail, response is:" + response);
+      if (entity != null) {
+        // Read the response body.
+        System.out.println(EntityUtils.toString(entity));
       }
-      br.close();
-    } finally {
-      // Release the connection.
-      method.releaseConnection();
+    } catch (ParseException ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -151,9 +145,7 @@ public class ArticleTransfer {
     FileInputStream is = new FileInputStream(zipFile);
     try {
       ftpClient.connect("www.purplexsu.net");
-      ftpClient.login(
-          credentials.getProperty("ftp.username"),
-          credentials.getProperty("ftp.password"));
+      ftpClient.login(credentials.getProperty("ftp.username"), credentials.getProperty("ftp.password"));
       ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
       ftpClient.enterLocalPassiveMode();
       ftpClient.changeWorkingDirectory("/www/cmdcmd");
@@ -170,36 +162,31 @@ public class ArticleTransfer {
   }
 
   private void callServer(String url) throws IOException {
-    final GetMethod method = new GetMethod(url);
-    prepareHttpMethod(method);
-    try {
-      // Execute the method.
-      int statusCode = httpClient.executeMethod(method);
-      if (statusCode != HttpStatus.SC_OK) {
-        System.err.println("Method failed: " + method.getStatusLine());
+    HttpGet httpGet = new HttpGet(url);
+    prepareHttpMethod(httpGet);
+    try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+      if (response.getCode() != HttpStatus.SC_OK) {
+        System.err.println("Method failed: " + response.getCode() + " " + response.getReasonPhrase());
       }
-
-      // Read the response body.
-      BufferedReader br = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-
-      // Deal with the response.
-      // Use caution: ensure correct character encoding and is not binary data
-      String response = null;
-      while ((response = br.readLine()) != null) {
-        System.out.println(response);
+      // Get the response entity
+      HttpEntity entity = response.getEntity();
+      // Print the response body
+      if (entity != null) {
+        System.out.println(EntityUtils.toString(entity));
       }
-      br.close();
-    } finally {
-      // Release the connection.
-      method.releaseConnection();
+    } catch (ParseException e) {
+      e.printStackTrace();
     }
   }
 
-  private void prepareHttpMethod(HttpMethod method) {
-    method.setDoAuthentication(true);
-    method.addRequestHeader("User-Agent", "PurpleHaze!");
-    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-    method.getParams().setSoTimeout(60 * 1000);
+  private void prepareHttpMethod(HttpUriRequestBase request) {
+    request.setHeader("User-Agent", "PurpleHaze!");
+    RequestConfig requestConfig = RequestConfig.custom()
+        .setConnectTimeout(Timeout.ofMilliseconds(5000)) // Connection timeout (5 seconds)
+        .setResponseTimeout(Timeout.ofMilliseconds(60000)) // Socket timeout (60 seconds)
+        .setConnectionRequestTimeout(Timeout.ofMilliseconds(5000)) // Connection request timeout (5 seconds)
+        .build();
+    request.setConfig(requestConfig);
   }
 
   private String getRelativePath(File file) {
